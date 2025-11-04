@@ -26,6 +26,9 @@ app.get('/api/scores', async (req, res) => {
     }
 });
 
+
+
+
 //Get player stats by name
 app.get('/api/player/:name', async (req, res) => {
     try {
@@ -34,7 +37,7 @@ app.get('/api/player/:name', async (req, res) => {
         const response = await axios.get('https://api.sleeper.app/v1/players/nfl'); 
         const players = response.data; 
 
-        const player = Object.values(player).find(p => 
+        const player = Object.values(players).find(p => 
             p.full_name && p.full_name.toLowerCase().includes(playerName.toLowerCase())
         );
 
@@ -47,6 +50,10 @@ app.get('/api/player/:name', async (req, res) => {
             res.status(500).json({error: 'Failed to fetch player data' });
         }
 });
+
+
+
+
 
 app.listen(PORT, () => {
     console.log('Server running on http://localhost:${PORT}');
