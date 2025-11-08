@@ -35,12 +35,12 @@ app.get('/api/player/:name', async (req, res) => {
         const response = await axios.get('https://api.sleeper.app/v1/players/nfl'); 
         const players = response.data; 
 
-        const player = Object.values(players).find(p => 
+        const matchingPlayers = Object.values(players).filter(p => 
             p.full_name && p.full_name.toLowerCase().includes(playerName.toLowerCase())
         );
 
-        if(player){
-            res.json(player); 
+        if(matchingPlayers.length > 0){
+            res.json(matchingPlayers); 
         } else {
             res.status(404).json({error: 'Player not found' });
         }
@@ -51,5 +51,5 @@ app.get('/api/player/:name', async (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log('Server running on http://localhost:${PORT}');
+    console.log(`Server running on http://localhost:${PORT}`);
 });
