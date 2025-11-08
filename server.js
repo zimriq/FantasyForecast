@@ -27,8 +27,6 @@ app.get('/api/scores', async (req, res) => {
 });
 
 
-
-
 //Get player stats by name
 app.get('/api/player/:name', async (req, res) => {
     try {
@@ -50,9 +48,6 @@ app.get('/api/player/:name', async (req, res) => {
             res.status(500).json({error: 'Failed to fetch player data' });
         }
 });
-
-
-
 
 
 app.listen(PORT, () => {
