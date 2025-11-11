@@ -54,8 +54,11 @@ The Start/Sit recommendation is calculated based on:
 **Scoring Formula:**
 - score = (recentAvg × 5)
 
-**🔮 Future Enhancements:**
-Planned features for future releases:
+---
+
+### 🔮 Future Enhancements
+
+**Planned features for future releases:**
 - Matchup Analysis — Factor in opponent defensive rankings
 - Season Averages — Include full season performance in calculations
 - Top Performers — Display weekly top performers by position
