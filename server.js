@@ -11,6 +11,9 @@ const PORT = 3000;
 app.use(cors()); 
 app.use(express.json()); 
 
+//serve static files from 'public' folder 
+app.use(express.static('public')); 
+
 //Test route 
 app.get('/', (req, res) => {
     res.json({ message: 'NFL Fantasy Helper API is running!' });
@@ -75,7 +78,7 @@ app.get('/api/player/:name', async (req, res) => {
     let foundPlayers = [];
     for(let i = 0; i < playerArray.length; i++){
         const currentPlayerName = playerArray[i];
-        
+
         const matchedPlayer = Object.values(allPlayers).find(p =>
         p.full_name && 
         p.full_name.toLowerCase().includes(currentPlayerName.toLowerCase()) &&
@@ -93,19 +96,26 @@ app.get('/api/player/:name', async (req, res) => {
     }
     
     //calculate scores 
-    // Auto-calculate current NFL week
-    const seasonStartDate = new Date('2024-09-05');
+        // Auto-calculate current NFL week
+    const seasonStartDate = new Date('2025-09-05');
     const today = new Date();
     const daysSinceStart = Math.floor((today - seasonStartDate) / (1000 * 60 * 60 * 24));
     const currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 18);
-    const weeksToAnalyze = 3; // ADD THIS LINE - you forgot to define it!
-    
-    const statsPromises = []; 
-    for(let week = currentWeek - weeksToAnalyze; week < currentWeek; week++){
-        statsPromises.push(
-        axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2024/${week}`) // FIX: Use () not template literal syntax
-        );
+
+    if (currentWeek <= 0) {
+        return res.status(400).json({ error: "NFL season hasn't started yet." });
     }
+
+    const weeksToAnalyze = 3;
+    const startWeek = Math.max(currentWeek - weeksToAnalyze, 1);
+
+    const statsPromises = [];
+    for (let week = startWeek; week < currentWeek; week++) {
+        statsPromises.push(
+        axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2025/${week}`)
+    );
+}
+
     
     //calculate scores based on actual fantasy points
     const statsResponses = await Promise.all(statsPromises); 
