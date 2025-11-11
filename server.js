@@ -50,40 +50,40 @@ app.get('/api/player/:name', async (req, res) => {
 });
 
 
-//Start/Sit Recommendation
-app.get('/api/compare', async (req, res) => {
+    //Start/Sit Recommendation
+    app.get('/api/compare', async (req, res) => {
     try {
     //getting players from query params
     const playerNames = req.query.players; 
-
+    
     //handling player names properly
     if(!playerNames){
         return res.status(400).json ({ error: 'Please provide player names'});
     }
-
+    
     const playerArray = playerNames.split(',').map(name => name.trim()); 
-
+    
     if(playerArray.length < 2){
         return res.status(400).json({ error: 'Please provide at least 2 players to compare'});
     }
-
-    //fetching players: 
+    
+    //fetching players
     const response = await axios.get('https://api.sleeper.app/v1/players/nfl');
     const allPlayers = response.data;
-
-
+    
     //finding each player 
-    let foundPlayers = []; //empty array
-
+    let foundPlayers = [];
     for(let i = 0; i < playerArray.length; i++){
         const currentPlayerName = playerArray[i];
-
+        
         const matchedPlayer = Object.values(allPlayers).find(p =>
-            p.full_name && p.full_name.toLowerCase().includes(currentPlayerName.toLowerCase())
-        );
-
-        if(matchedPlayer){  //adding to array 
-            foundPlayers.push(matchedPlayer); 
+        p.full_name && 
+        p.full_name.toLowerCase().includes(currentPlayerName.toLowerCase()) &&
+        p.team && p.team !== null &&  // Has a team
+        p.active === true  // Is active
+     );
+        if(matchedPlayer){
+        foundPlayers.push(matchedPlayer); 
         }
     }
     
@@ -91,15 +91,79 @@ app.get('/api/compare', async (req, res) => {
     if(foundPlayers.length !== playerArray.length){
         return res.status(400).json ({ error: 'One or more players not found'});
     }
-
-    //TODO: step 4 - calculate scores 
-    //TODO: step 5 - Determine recommendation
-    //TODO: step 6 - Send response 
+    
+    //calculate scores 
+    // Auto-calculate current NFL week
+    const seasonStartDate = new Date('2024-09-05');
+    const today = new Date();
+    const daysSinceStart = Math.floor((today - seasonStartDate) / (1000 * 60 * 60 * 24));
+    const currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 18);
+    const weeksToAnalyze = 3; // ADD THIS LINE - you forgot to define it!
+    
+    const statsPromises = []; 
+    for(let week = currentWeek - weeksToAnalyze; week < currentWeek; week++){
+        statsPromises.push(
+        axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2024/${week}`) // FIX: Use () not template literal syntax
+        );
+    }
+    
+    //calculate scores based on actual fantasy points
+    const statsResponses = await Promise.all(statsPromises); 
+    const weeklyStats = statsResponses.map(res => res.data); 
+    
+    const scoredPlayers = foundPlayers.map(player => {
+        const playerId = player.player_id; 
+        
+        //get player's stats from each week
+        const playerWeeklyPoints = weeklyStats.map(week => {
+        const stats = week[playerId]; 
+        return stats ? (stats.pts_ppr || 0) : 0; 
+        }).filter(pts => pts > 0); //filter weeks not played
+        
+        //calc recent avg
+        const recentAvg = playerWeeklyPoints.length > 0
+        ? playerWeeklyPoints.reduce((sum, pts) => sum + pts, 0) / playerWeeklyPoints.length
+        : 0; 
+        
+        //calc score 
+        let score = recentAvg * 5;
+        
+        // Bonus for consistency
+        if (playerWeeklyPoints.length === weeksToAnalyze) {
+        score += 10;
+        }
+        
+        // Penalty for inactive
+        if(!player.active) {
+        score = 0; 
+        }
+        
+        return {
+        name: player.full_name, 
+        position: player.position, 
+        team: player.team || 'Free Agent', 
+        score: Math.round(score), 
+        recentAvg: Math.round(recentAvg * 10) / 10, 
+        gamesPlayed: playerWeeklyPoints.length, 
+        weeklyPoints: playerWeeklyPoints
+        };
+    });
+    
+    //Step 5 - Determine recommendation
+    const sortedPlayers = scoredPlayers.sort((a, b) => b.score - a.score);
+    const recommended = sortedPlayers[0];
+    
+    //Step 6 - Send response 
+    res.json({
+        recommendation: recommended.name,
+        reason: `Averaged ${recommended.recentAvg} fantasy points over last ${weeksToAnalyze} weeks`,
+        comparison: sortedPlayers
+    });
     
     } catch (error) {
-        res.status(500).json({ error: 'Failed to compare players' }); 
+    res.status(500).json({ error: 'Failed to compare players' }); 
     }
-});
+    });
 
 
 app.listen(PORT, () => {
