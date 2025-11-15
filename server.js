@@ -7,17 +7,13 @@ const cors = require('cors');
 const app = express(); 
 const PORT = 3000; 
 
+
 //Middleware
 app.use(cors()); 
 app.use(express.json()); 
 
 //serve static files from 'public' folder 
 app.use(express.static('public')); 
-
-//Test route 
-app.get('/', (req, res) => {
-    res.json({ message: 'NFL Fantasy Helper API is running!' });
-});
 
 //Get current NFL scores 
 app.get('/api/scores', async (req, res) => {

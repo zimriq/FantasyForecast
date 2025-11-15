@@ -2,7 +2,7 @@
 const compareBtn = document.getElementById('compareBtn'); 
 const player1Input = document.getElementById('player1'); 
 const player2Input = document.getElementById('player2'); 
-const resultSection = document.getElementById('results'); 
+const resultsSection = document.getElementById('results'); 
 
 //Listen for button click 
 compareBtn.addEventListener('click', async() => {
@@ -17,7 +17,7 @@ compareBtn.addEventListener('click', async() => {
     }
 
     //building player string 
-    let players = `${player1}, ${player2}`; 
+    let players = `${player1},${player2}`; 
 
     //show loading state
     compareBtn.textContent = 'Comparing...'; 
@@ -25,7 +25,7 @@ compareBtn.addEventListener('click', async() => {
 
     try{
         //call API
-        const response = await fetch(`/api/compare?players=${encodeURIComponenet(players)}`);
+        const response = await fetch(`/api/compare?players=${encodeURIComponent(players)}`);
         const data = await response.json(); 
 
         if(response.ok) {
@@ -37,9 +37,10 @@ compareBtn.addEventListener('click', async() => {
         }
     } catch(error) {
         alert('Network error. Please try again.'); 
+        console.error('Error:', error);     //adding to see actual error
     } finally {
         //reset button 
-        compareBtn.textContent = 'Compare Player'; 
+        compareBtn.textContent = 'Compare Players'; 
         compareBtn.disabled = false; 
     }
 });
