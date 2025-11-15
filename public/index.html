@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Fantasy Helper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🏈 NFL Fantasy Helper</h1>
+        <p>Make Data-Driven Start/Sit Decisions</p>
+    </header>
+
+    <main>
+        <section class="compare-section">
+            <h2>Compare Players</h2>
+            <p class="info-text">Analysis basaed on last 3 weeks of performance</p>
+
+            <div class="player-inputs">
+                <input type="text" id="player1" placeholder="Enter player name (e.g., Patrick Mahomes)">
+                <input type="text" id="player2" placeholder="Enter player name (e.g., Jordan Love)">
+            </div>
+
+            <button id="compareBtn">Compare Players</button>
+        </section>
+
+        <section class="results-section" id="results">
+            <!-- Results will be inserted here by JS -->
+        </section>
+    </main>
+    
+    <script src="app.js"></script>
+</body>
+</html>

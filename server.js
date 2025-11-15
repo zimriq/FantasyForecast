@@ -129,6 +129,7 @@ app.get('/api/player/:name', async (req, res) => {
         const stats = week[playerId]; 
         return stats ? (stats.pts_ppr || 0) : 0; 
         }).filter(pts => pts > 0); //filter weeks not played
+
         
         //calc recent avg
         const recentAvg = playerWeeklyPoints.length > 0
@@ -155,7 +156,10 @@ app.get('/api/player/:name', async (req, res) => {
         score: Math.round(score), 
         recentAvg: Math.round(recentAvg * 10) / 10, 
         gamesPlayed: playerWeeklyPoints.length, 
-        weeklyPoints: playerWeeklyPoints
+        weeklyPoints: playerWeeklyPoints, 
+        dataStatus: playerWeeklyPoints.length < weeksToAnalyze
+            ? 'Limited data - stats may be updating'
+            : 'Complete data'
         };
     });
     

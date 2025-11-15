@@ -29,7 +29,7 @@ A comprehensive full-stack fantasy football toolkit that provides data-driven in
 ### Frontend
 - **HTML5** — Structure  
 - **CSS3** — Styling  
-- **JavaScript (Vanilla)** — Client-side logic  
+- **JavaScript** — Client-side logic  
 
 ### APIs
 - **Sleeper API** — NFL player data and weekly fantasy statistics  
