@@ -1,0 +1,116 @@
+/* Reset / Base styles */ 
+* {
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    background: linear-gradient(150deg, #8c99d3 0%, #764ba2 100%); 
+    min-height: 100vh; 
+    padding: 50px;
+}
+
+/* Header */ 
+header {
+    text-align: center; 
+    color: white; 
+    margin-bottom: 50px; 
+}
+
+header h1 {
+    font-size: 3rem; 
+    margin-bottom: 10px; 
+}
+
+header p {
+    font-size: 1.2rem; 
+    opacity: 0.9; 
+}
+
+/* Main container */ 
+main { 
+    max-width: 800px;
+    margin: 0 auto; 
+}
+
+/* Compare Section */
+.compare-section {
+    background: white; /* or: rgb(126, 115, 208); */
+    padding: 30px;
+    border-radius: 15px; 
+    box-shadow: 0 20px 30px rgba(29, 0, 175, 0.421);
+    margin-bottom: 30px;
+}
+
+.compare-section h2 {
+    font-size: 2rem; 
+    margin-bottom: 10px; 
+    color: #000080;   
+}
+
+.info-text {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95rem; 
+}
+
+/* Input Boxes */ 
+.player-inputs {
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    margin-bottom: 20px; 
+}
+
+.player-inputs input {
+    padding: 15px; 
+    font-size: 1rem; 
+    border: 2px solid #e0e0e0; 
+    border-radius: 50px; 
+    transition: border-color 0.3s; 
+}
+
+/* Clicking into text box */ 
+.player-inputs input:focus {
+    outline: none; 
+    border-color: black;
+}
+
+/* Button */ 
+#compareBtn {
+    width: 100%; 
+    padding: 15px; 
+    font-size: 1rem; 
+    font-weight: bold; 
+    color: white; 
+    background: linear-gradient(150deg, #4b5dad 0%, #8864ae 100%);
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: transform 0.2s, box-shadow 0.2s; 
+}
+
+#compareBtn:hover {
+    transform: translate(-2px); 
+    box-shadow: 0 15px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Clicking into box */
+#compareBtn:active {
+    transform: translateY(0); 
+}
+
+/* Results Section */ 
+.results-section {
+    background: white; 
+    padding: 30px; 
+    border-radius: 15px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: none; /* Hidden until results are needed */
+}
+
+.results-section.show {
+    display: block; 
+}
