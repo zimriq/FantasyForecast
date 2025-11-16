@@ -47,6 +47,47 @@ compareBtn.addEventListener('click', async() => {
 
 //Function to display results 
 function displayResults(data) {
+    //building html for results 
+    let html = `
+        <div class="recommendation"> 
+            <h3 🏆 Recommendation: START ${data.recommendation}</h3>
+            <p class="reason">${data.reason}</p>
+        </div>
+        
+        <div class="comparison-cards">
+        `;
+    
+    //add card for each player
+    data.comparison.forEach((player, index) => {
+        const isRecommended = player.name === data.recommendation; 
+        html+= `
+            <div class="player-card ${isRecommended ? 'recommended' : ''}">
+                <div class="player-header"> 
+                    <h4>${player.name}</h4>
+                    ${isRecommended ? '<span class="badge start">START</span>' : '<span class="badge sit">SIT</span>'}
+                </div>
+                <div class="player-info"> 
+                    <p><strong>Position:</strong? ${player.position}</p>
+                    <p><strong>Team:</strong> ${player.team}</p>
+                    <p><strong>Score:</strong> ${player.score}</p>
+                    <p></strong>Recent Avg:</strong> ${player.recentAvg}</p>
+                    <p><strong>Games Played:</strong> ${player.gamesPlayed}/3</p>
+                    <p class="data-status">${player.dataStatus}</p>
+                </div>
+                <div class="weekly-points">
+                    <p><strong>Last 3 Weeks:</strong></p>
+                    <p>${player.weeklyPoints.join(', ')} pts</p>
+                </div>
+            </div>
+        `;
+    });
 
-    console.log('Results:', data); 
+    html += `</div>`;
+
+    //inserting results into section to show it
+    resultsSection.innerHTML = html; 
+    resultSection.classList.add('show'); 
+
+    //scroll to results smoothly
+    resultsSection.scrollIntoView({ behavior: 'smooth'});
 }
