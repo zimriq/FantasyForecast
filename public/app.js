@@ -86,7 +86,7 @@ function displayResults(data) {
 
     //inserting results into section to show it
     resultsSection.innerHTML = html; 
-    resultSection.classList.add('show'); 
+    resultsSection.classList.add('show'); 
 
     //scroll to results smoothly
     resultsSection.scrollIntoView({ behavior: 'smooth'});
