@@ -7,14 +7,11 @@ A comprehensive full-stack fantasy football toolkit that provides data-driven in
 ## ✅ Current Features
 
 ### **Player Analysis Tools**
-- **Player Comparison** — Compare 2+ NFL players side-by-side with detailed stats  
+- **Player Comparison** — Compare 2 NFL players side-by-side with detailed stats  
 - **Start/Sit Recommendations** — Get data-driven recommendations based on recent performance  
-- **Player Search** — Search for any active NFL player and view their complete profile  
-- **Performance Tracking** — View player stats including PPR fantasy points and weekly performance  
 
 ### **Live Data & Information**
 - **Real Performance Data** — Uses actual fantasy points from recent games (last 3 weeks)  
-- **Live NFL Scores** — View current NFL game scores and real-time information  
 - **Automatic Week Detection** — App automatically updates for the current NFL week  
 
 ---
@@ -65,4 +62,7 @@ The Start/Sit recommendation is calculated based on:
 - Injury Tracker — Real-time injury updates and impact analysis
 - Trade Analyzer — Evaluate trade proposals and fairness
 - Weather Conditions — Include weather data for game-day decisions
+- Live NFL Scores — View current NFL game scores and real-time information 
+- Player Search — Search for any active NFL player, view their complete profile, and view player stats including PPR fantasy points and weekly performance  
+
 
