@@ -96,14 +96,27 @@ app.get('/api/player/:name', async (req, res) => {
     const seasonStartDate = new Date('2025-09-05');
     const today = new Date();
     const daysSinceStart = Math.floor((today - seasonStartDate) / (1000 * 60 * 60 * 24));
-    const currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 18);
+    let currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 18);
 
     if (currentWeek <= 0) {
         return res.status(400).json({ error: "NFL season hasn't started yet." });
     }
 
-    const weeksToAnalyze = 3;
-    const startWeek = Math.max(currentWeek - weeksToAnalyze, 1);
+    //analyzing week that just finished 
+    const dayOfWeek = today.getDay();  // 2=Tuesday, 3=Wednesday
+
+    if(dayOfWeek === 2 || dayOfWeek === 3) {
+        currentWeek = currentWeek + 1; 
+    }
+    //otherwise Thu-Mon, keep currentWeek b/c week is in prog.
+
+    const weeksToAnalyze = 3; 
+    const startWeek = Math.max(1, currentWeek - weeksToAnalyze); 
+    
+    console.log('Today is:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek]);
+    console.log('Planning for Week:', currentWeek);
+    console.log('Current week calculated as:', currentWeek);
+    console.log('Analyzing weeks:', startWeek, 'to', currentWeek - 1);
 
     const statsPromises = [];
     for (let week = startWeek; week < currentWeek; week++) {
