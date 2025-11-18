@@ -213,3 +213,33 @@ main {
     color: #555; 
 }
 
+/* Reset Button - hidden by default */ 
+.reset-btn {
+    width: 100%; 
+    padding: 15px; 
+    font-size: 1.1rem; 
+    font-weight: bold; 
+    color: red; 
+    background: white; 
+    border: 2px solid red; 
+    border-radius: 8px; 
+    cursor: pointer;
+    transition: all 0.2s; 
+    margin-top: 15px; 
+    display: none;  /* Hidden by default */ 
+}
+
+.reset-btn.show {
+    display: block; /* show when results appear */ 
+}
+
+.reset-btn:hover {
+    background: red; 
+    color: white; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3); 
+}
+
+.reset-btn:active {
+    transform: translateY(0); 
+}

@@ -3,6 +3,7 @@ const compareBtn = document.getElementById('compareBtn');
 const player1Input = document.getElementById('player1'); 
 const player2Input = document.getElementById('player2'); 
 const resultsSection = document.getElementById('results'); 
+const resetBtn = document.getElementById('resetBtn'); 
 
 //Listen for button click 
 compareBtn.addEventListener('click', async() => {
@@ -50,8 +51,9 @@ function displayResults(data) {
     //building html for results 
     let html = `
         <div class="recommendation"> 
-            <h3 🏆 Recommendation: START ${data.recommendation}</h3>
+            <h3> 🏆 Recommendation: START ${data.recommendation}</h3>
             <p class="reason">${data.reason}</p>
+              <br><br>
         </div>
         
         <div class="comparison-cards">
@@ -67,10 +69,10 @@ function displayResults(data) {
                     ${isRecommended ? '<span class="badge start">START</span>' : '<span class="badge sit">SIT</span>'}
                 </div>
                 <div class="player-info"> 
-                    <p><strong>Position:</strong? ${player.position}</p>
+                    <p><strong>Position:</strong> ${player.position}</p>
                     <p><strong>Team:</strong> ${player.team}</p>
                     <p><strong>Score:</strong> ${player.score}</p>
-                    <p></strong>Recent Avg:</strong> ${player.recentAvg}</p>
+                    <p><strong>Recent Avg:</strong> ${player.recentAvg}</p>
                     <p><strong>Games Played:</strong> ${player.gamesPlayed}/3</p>
                     <p class="data-status">${player.dataStatus}</p>
                 </div>
@@ -88,6 +90,22 @@ function displayResults(data) {
     resultsSection.innerHTML = html; 
     resultsSection.classList.add('show'); 
 
+    //show reset button
+    resetBtn.classList.add('show'); 
+
     //scroll to results smoothly
     resultsSection.scrollIntoView({ behavior: 'smooth'});
 }
+
+//Reset button functionality
+resetBtn.addEventListener('click', () => {
+    player1Input.value = ' '; 
+    player2Input.value = ' '; 
+
+    resultsSection.innerHTML = ' '; 
+    resultsSection.classList.remove('show'); 
+
+    resetBtn.classList.remove('show'); 
+
+    player1Input.focus(); 
+})
