@@ -5,19 +5,19 @@ const cors = require('cors');
 
 //create server
 const app = express(); 
-const PORT = 3000; 
+const PORT = process.env.PORT || 3000;  //letting render assign dynamic port 
 
 
 //Middleware
 app.use(cors({
-    orign: [
-        "https://fantasyforecast:vercle.app", //frontend deployment
-        "https://localhost:3000"  //local testing
+    origin: [
+        "https://fantasyforecast.vercel.app", //frontend deployment
+        "http://localhost:3000"  //local testing
     ], 
     credentials: true
 })); 
 
-app.use(express.j2son()); 
+app.use(express.json()); 
 
 //serve static files from 'public' folder 
 app.use(express.static('public')); 

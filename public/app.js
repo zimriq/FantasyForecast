@@ -14,12 +14,6 @@ compareBtn.addEventListener('click', async() => {
     const player1 = player1Input.value.trim(); 
     const player2 = player2Input.value.trim(); 
 
-    //validation - need at least 2 players
-    if(!player1 || !player2) {
-        alert('Please enter at least 2 player names'); 
-        return; 
-    }
-
     //building player string 
     let players = `${player1},${player2}`; 
 
