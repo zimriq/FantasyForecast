@@ -9,8 +9,15 @@ const PORT = 3000;
 
 
 //Middleware
-app.use(cors()); 
-app.use(express.json()); 
+app.use(cors({
+    orign: [
+        "https://fantasyforecast:vercle.app", //frontend deployment
+        "https://localhost:3000"  //local testing
+    ], 
+    credentials: true
+})); 
+
+app.use(express.j2son()); 
 
 //serve static files from 'public' folder 
 app.use(express.static('public')); 
