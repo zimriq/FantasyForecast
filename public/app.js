@@ -1,3 +1,6 @@
+//API const var to call on backend url deployment
+const API_URL = "https://fantasyforecast.onrender.com";
+
 //Get references to HTML elements
 const compareBtn = document.getElementById('compareBtn'); 
 const player1Input = document.getElementById('player1'); 
@@ -26,7 +29,7 @@ compareBtn.addEventListener('click', async() => {
 
     try{
         //call API
-        const response = await fetch(`/api/compare?players=${encodeURIComponent(players)}`);
+        const response = await fetch(`${API_URL}/api/compare?players=${encodeURIComponent(players)}`);
         const data = await response.json(); 
 
         if(response.ok) {
@@ -99,10 +102,10 @@ function displayResults(data) {
 
 //Reset button functionality
 resetBtn.addEventListener('click', () => {
-    player1Input.value = ' '; 
-    player2Input.value = ' '; 
+    player1Input.value = ""; 
+    player2Input.value = ""; 
 
-    resultsSection.innerHTML = ' '; 
+    resultsSection.innerHTML = ""; 
     resultsSection.classList.remove('show'); 
 
     resetBtn.classList.remove('show'); 
