@@ -99,38 +99,47 @@ app.get('/api/player/:name', async (req, res) => {
     }
     
     //calculate scores 
-        // Auto-calculate current NFL week
-    const seasonStartDate = new Date('2025-09-05');
-    const today = new Date();
-    const daysSinceStart = Math.floor((today - seasonStartDate) / (1000 * 60 * 60 * 24));
-    let currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 18);
 
-    if (currentWeek <= 0) {
-        return res.status(400).json({ error: "NFL season hasn't started yet." });
-    }
 
-    //analyzing week that just finished 
-    const dayOfWeek = today.getDay();  // 2=Tuesday, 3=Wednesday
+    // Auto-calculate current NFL week
+const today = new Date();
+const seasonStart = new Date('2025-09-05');
+const daysSinceStart = Math.floor((today - seasonStart) / (1000*60*60*24));
 
-    if(dayOfWeek === 2 || dayOfWeek === 3) {
-        currentWeek = currentWeek + 1; 
-    }
-    //otherwise Thu-Mon, keep currentWeek b/c week is in prog.
+// Week since season start (1-based)
+let currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, 18);
 
-    const weeksToAnalyze = 3; 
-    const startWeek = Math.max(1, currentWeek - weeksToAnalyze); 
-    
-    console.log('Today is:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek]);
-    console.log('Planning for Week:', currentWeek);
-    console.log('Current week calculated as:', currentWeek);
-    console.log('Analyzing weeks:', startWeek, 'to', currentWeek - 1);
+// Determine last completed week
+const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+let lastCompletedWeek = currentWeek;
 
-    const statsPromises = [];
-    for (let week = startWeek; week < currentWeek; week++) {
-        statsPromises.push(
+// Week is complete only after Monday
+if(dayOfWeek >= 2) { // Tue-Sat
+    lastCompletedWeek = currentWeek - 1;
+}
+
+// Make sure we don’t go below week 1
+lastCompletedWeek = Math.max(1, lastCompletedWeek);
+
+// Last 3 weeks to analyze
+const weeksToAnalyze = 3;
+const startWeek = Math.max(1, lastCompletedWeek - weeksToAnalyze + 1);
+
+// Logging for debugging
+console.log('Today is:', ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]);
+console.log('Current week calculated as:', currentWeek);
+console.log('Last completed week:', lastCompletedWeek);
+console.log('Analyzing weeks:', startWeek, 'to', lastCompletedWeek);
+
+// Fetch stats for each of the last 3 completed weeks
+const statsPromises = [];
+for (let week = startWeek; week <= lastCompletedWeek; week++) {
+    statsPromises.push(
         axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2025/${week}`)
     );
 }
+
+
 
     
     //calculate scores based on actual fantasy points
