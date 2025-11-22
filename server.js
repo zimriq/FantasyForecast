@@ -7,54 +7,6 @@ const cors = require('cors');
 const app = express(); 
 const PORT = process.env.PORT || 3000;  //letting render assign dynamic port 
 
-
-//Middleware
-app.use(cors({
-    origin: [
-        "https://fantasyforecast.vercel.app", //frontend deployment
-        "http://localhost:3000"  //local testing
-    ], 
-    credentials: true
-})); 
-
-app.use(express.json()); 
-
-//serve static files from 'public' folder 
-app.use(express.static('public')); 
-
-//Get current NFL scores 
-app.get('/api/scores', async (req, res) => {
-    try{
-        const response = await axios.get('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
-        res.json(response.data);
-    } catch(error) {
-        res.status(500).json({ error: 'Failed to fetch scores' });
-    }
-});
-
-
-//Get player stats by name
-app.get('/api/player/:name', async (req, res) => {
-    try {
-        const playerName = req.params.name;
-        
-        const response = await axios.get('https://api.sleeper.app/v1/players/nfl'); 
-        const players = response.data; 
-
-        const matchingPlayers = Object.values(players).filter(p => 
-            p.full_name && p.full_name.toLowerCase().includes(playerName.toLowerCase())
-        );
-
-        if(matchingPlayers.length > 0){
-            res.json(matchingPlayers); 
-        } else {
-            res.status(404).json({error: 'Player not found' });
-        }
-        } catch (error) {
-            res.status(500).json({error: 'Failed to fetch player data' });
-        }
-});
-
 // Helper function to calculate defense rankings 
 async function calculateDefensiveRankings(weeks){
     try{
@@ -114,6 +66,53 @@ async function calculateDefensiveRankings(weeks){
         return {}; 
     }
 }
+
+//Middleware
+app.use(cors({
+    origin: [
+        "https://fantasyforecast.vercel.app", //frontend deployment
+        "http://localhost:3000"  //local testing
+    ], 
+    credentials: true
+})); 
+
+app.use(express.json()); 
+
+//serve static files from 'public' folder 
+app.use(express.static('public')); 
+
+//Get current NFL scores 
+app.get('/api/scores', async (req, res) => {
+    try{
+        const response = await axios.get('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+        res.json(response.data);
+    } catch(error) {
+        res.status(500).json({ error: 'Failed to fetch scores' });
+    }
+});
+
+
+//Get player stats by name
+app.get('/api/player/:name', async (req, res) => {
+    try {
+        const playerName = req.params.name;
+        
+        const response = await axios.get('https://api.sleeper.app/v1/players/nfl'); 
+        const players = response.data; 
+
+        const matchingPlayers = Object.values(players).filter(p => 
+            p.full_name && p.full_name.toLowerCase().includes(playerName.toLowerCase())
+        );
+
+        if(matchingPlayers.length > 0){
+            res.json(matchingPlayers); 
+        } else {
+            res.status(404).json({error: 'Player not found' });
+        }
+        } catch (error) {
+            res.status(500).json({error: 'Failed to fetch player data' });
+        }
+});
 
 
     //Start/Sit Recommendation
@@ -224,11 +223,6 @@ for (let week = startWeek; week <= lastCompletedWeek; week++) {
         //calc score 
         let score = recentAvg * 5;
         
-        // Bonus for consistency
-        if (playerWeeklyPoints.length === weeksToAnalyze) {
-        score += 10;
-        }
-        
         // Penalty for inactive
         if(!player.active) {
         score = 0; 
@@ -264,6 +258,15 @@ for (let week = startWeek; week <= lastCompletedWeek; week++) {
     }
     });
 
+app.get('/api/test-defense', async (req, res) => {
+    try {
+        const weeks = [9, 10, 11]; //hardcoding testing
+        const rankigns = await calculateDefensiveRankings(weeks); 
+        res.json(rankings); 
+    } catch (error) {
+        res.status(500).json({ error: error.message }); 
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
