@@ -55,6 +55,66 @@ app.get('/api/player/:name', async (req, res) => {
         }
 });
 
+// Helper function to calculate defense rankings 
+async function calculateDefensiveRankings(weeks){
+    try{
+        const statsPromises = weeks.map(week =>
+            axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2025/${week}`)
+        ); 
+
+        const statsResponses = await Promise.all(statsPromises);
+        const allStats = statsResponses.map(res => res.data);
+
+        //Get all players data to know positions
+        const playersResponse = await axios.get('https://api.sleeper.app/v1/players/nfl');
+        const allPlayers = playersResponse.data;
+
+        // Track points allowed by each team def against each position
+        const defenseStats = {};
+
+        //process each week's stats
+        allStats.forEach(weekStats => {
+            Object.entries(weekStats).forEach(([plyaerId, stats]) => {
+                const player = allPlayers[playerId]; 
+                if(!player || !player.team || !stats.opponent) return; 
+
+                const position = player.position; 
+                const opponent = stats.opponent; 
+                const points = stats.pts_ppr || 0; 
+
+                //skip if no important data 
+                if(!position || !opponent || points === 0) return; 
+
+                //initialize def stats
+                if(!defenseStats[opponent]) {
+                    defenseStats[opponent] = {};                
+                }
+                if(!defenseStats[opponent][position]) {
+                    defenseStats[opponent][position] = []; 
+                }
+
+                //record pts scored against this def
+                defenseStats[opponent][position].push(points); 
+            });
+        });
+
+        //calc avg
+        const rankings = {}; 
+        Object.entries(defenseStats).forEach(([team, positions]) => {
+            rankings[team] = {}; 
+            Object.entries(positions).forEach(([position, pointsArray]) => {
+                const avg = pointsArray.reduce((sum, pts) => sum + pts, 0) / pointsArray.length; 
+                rankings[team][position] = Math.round(avg * 10)/ 10; 
+            });
+        });
+
+    return rankings; 
+    } catch (error) {
+        console.error('Error calc defensive rankings: ', error); 
+        return {}; 
+    }
+}
+
 
     //Start/Sit Recommendation
     app.get('/api/compare', async (req, res) => {
