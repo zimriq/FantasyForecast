@@ -43,7 +43,96 @@ async function calculateDefensiveRankings(weeks){
             axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2025/${week}`)
         ); 
 
-        
+        //fetching schedule for weeks
+        const schedulePromises = weeks.map(week => getWeekSchedule(week)); 
+
+        const [statsResponses, schedule] = await Promise.all([
+            Promise.all(statsPromises), 
+            Promise.all(schedulePromises)
+        ]); 
+
+        const allStats = statsResponses.map(res => res.data); 
+
+        //get all player data 
+        const playersResponses = await axios.get(`https://api.sleeper.app/v1/players/nfl`); 
+        const allPlayers = playersResponse.data; 
+
+        //tracking points allowed by each def
+        const defenseStats = {}; 
+
+        //processing each week 
+        allStats.forEach((weekStats, weekIndex) => {
+            const weekSchedule = schedules[weekIndex]; 
+
+            Object.entries(weekStast).forEach(([playerId, stats]) => {
+                const player = allPlayers[playerId]; 
+                if(!player|| !player.team) return; 
+
+                const position = player.position; 
+                const playerTeam = player.team; 
+                const points = stats.pts_ppr || 0; 
+
+                //irrelevant data
+                if(!position || !playerTeam || points === 0) return; 
+                if(['K', 'DEF'].includes(position)) return; //skipping kicker/def
+
+                //find opp from schedule 
+                const opponent = weekSchedule[playerTeam]; 
+                if(!opponent) return; 
+
+                //intialize def stats
+                if(!defenseStats[opponent]) {
+                    defenseStats[opponent] = {}; 
+                }
+                if(!defenseStats[opponent][position]) {
+                    defenseStats[opponent][position] = []; 
+                }
+
+                //record pts this pos scores against this def
+                defenseStats[opponent][position].push(points); 
+            });
+        });
+    //calc avgs and league avgs
+    const rankings = {}; 
+    const leagueAvg = {}; 
+    
+    //1, calc league avg per pos
+    Object.values(defenseStats).forEach(position => {
+        Object.entries(position).forEach(([position, pointsArray]) => {
+            if(!leagueAvg[position]) {
+                leagueAvg[position] = []; 
+            }
+            leagueAvg[position].push(pointsArray); 
+        }); 
+    }); 
+    
+    //calc league avg
+    Object.keys(leagueAvg).forEach(position => {
+        const avg = leagueAvg[position].reduce((sum, pts) => sum + pts, 0) / leagueAvg[position].length;
+        leagueAvg[position] = Math.round(avg * 10) / 10;
+    });
+
+    //2, calc def avg and compare to league 
+    Object.entries(defenseStats).forEach(([team, positions]) => {
+        rankings[team] = {};
+        Object.entries(positions).forEach(([position, pointsArray]) => {
+            const avg = pointsArray.reduce((sum, pts) => sum + pts, 0) / pointsArray.length;
+            const defAvg = Math.round(avg * 10) / 10;
+            const leagueAvgForPos = leagueAvg[position] || avg;
+
+        rankings[team][position] = {
+            avg: defAvg,
+            difficulty: defAvg > leagueAvgForPos ? 'Tough' : 'Favorable',
+            vsLeague: Math.round((defAvg - leagueAvgForPos) * 10) / 10
+        };
+        });
+    });
+
+    return { rankings, leagueAvg };
+    } catch (error) {
+        console.error('Error calculating defensive rankings: ', error);
+        return { rankings: {}, leagueAvg: {} };
+    }
 }
 
 //Middleware

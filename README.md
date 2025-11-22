@@ -57,7 +57,6 @@ The Start/Sit recommendation is calculated based on:
 
 **Planned features for future releases:**
 - Matchup Analysis — Factor in opponent defensive rankings
-- Season Averages — Include full season performance in calculations
 - Top Performers — Display weekly top performers by position
 - Injury Tracker — Real-time injury updates and impact analysis
 - Trade Analyzer — Evaluate trade proposals and fairness
