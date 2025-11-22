@@ -7,6 +7,35 @@ const cors = require('cors');
 const app = express(); 
 const PORT = process.env.PORT || 3000;  //letting render assign dynamic port 
 
+//Helper function to get the week schedule from ESPN
+async function getWeekSchedule(week, season = 2025) {
+    try{
+        //espn's api
+        const response = await axios.get(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scorebard?dates=${season}&seasontype=2&week=${week}`);
+
+        const games = response.data.events || []; 
+        const schedule = {}; 
+
+        games.forEach(game => {
+            const homeTeam = game.competitions[0].competitors.find(t => t.homeAway == 'home');
+            const awayTeam = game.competitions[0].competitions.find(t => t.homeAway == 'away'); 
+
+            const homeAbbr = homeTeam.team.abbreviation;
+            const awayAbbr = awayTeam.team.abbreviation; 
+
+            //map - each team played against who
+            schedule[homeAbbr] = awayAbbr; 
+            schedule[awayAbbr] = homeAbbr; 
+        });
+
+        return schedule; 
+    } catch (error) {
+        console.error(`Error fetching schedule for week ${week}: `, error.message); 
+        return {}; 
+    }
+}
+
+
 // Helper function to calculate defense rankings 
 async function calculateDefensiveRankings(weeks){
     try{
@@ -14,57 +43,7 @@ async function calculateDefensiveRankings(weeks){
             axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/2025/${week}`)
         ); 
 
-        const statsResponses = await Promise.all(statsPromises);
-        const allStats = statsResponses.map(res => res.data);
-
-        //Get all players data to know positions
-        const playersResponse = await axios.get('https://api.sleeper.app/v1/players/nfl');
-        const allPlayers = playersResponse.data;
-
-        // Track points allowed by each team def against each position
-        const defenseStats = {};
-
-        //process each week's stats
-        allStats.forEach(weekStats => {
-            Object.entries(weekStats).forEach(([plyaerId, stats]) => {
-                const player = allPlayers[playerId]; 
-                if(!player || !player.team || !stats.opponent) return; 
-
-                const position = player.position; 
-                const opponent = stats.opponent; 
-                const points = stats.pts_ppr || 0; 
-
-                //skip if no important data 
-                if(!position || !opponent || points === 0) return; 
-
-                //initialize def stats
-                if(!defenseStats[opponent]) {
-                    defenseStats[opponent] = {};                
-                }
-                if(!defenseStats[opponent][position]) {
-                    defenseStats[opponent][position] = []; 
-                }
-
-                //record pts scored against this def
-                defenseStats[opponent][position].push(points); 
-            });
-        });
-
-        //calc avg
-        const rankings = {}; 
-        Object.entries(defenseStats).forEach(([team, positions]) => {
-            rankings[team] = {}; 
-            Object.entries(positions).forEach(([position, pointsArray]) => {
-                const avg = pointsArray.reduce((sum, pts) => sum + pts, 0) / pointsArray.length; 
-                rankings[team][position] = Math.round(avg * 10)/ 10; 
-            });
-        });
-
-    return rankings; 
-    } catch (error) {
-        console.error('Error calc defensive rankings: ', error); 
-        return {}; 
-    }
+        
 }
 
 //Middleware
@@ -84,7 +63,7 @@ app.use(express.static('public'));
 //Get current NFL scores 
 app.get('/api/scores', async (req, res) => {
     try{
-        const response = await axios.get('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+        const response = await axios.get(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`);
         res.json(response.data);
     } catch(error) {
         res.status(500).json({ error: 'Failed to fetch scores' });
@@ -97,7 +76,7 @@ app.get('/api/player/:name', async (req, res) => {
     try {
         const playerName = req.params.name;
         
-        const response = await axios.get('https://api.sleeper.app/v1/players/nfl'); 
+        const response = await axios.get(`https://api.sleeper.app/v1/players/nfl`); 
         const players = response.data; 
 
         const matchingPlayers = Object.values(players).filter(p => 
@@ -133,7 +112,7 @@ app.get('/api/player/:name', async (req, res) => {
     }
     
     //fetching players
-    const response = await axios.get('https://api.sleeper.app/v1/players/nfl');
+    const response = await axios.get(`https://api.sleeper.app/v1/players/nfl`);
     const allPlayers = response.data;
     
     //finding each player 
@@ -259,15 +238,34 @@ for (let week = startWeek; week <= lastCompletedWeek; week++) {
     });
 
 app.get('/api/test-defense', async (req, res) => {
-    try {
-        const weeks = [9, 10, 11]; //hardcoding testing
-        const rankigns = await calculateDefensiveRankings(weeks); 
-        res.json(rankings); 
-    } catch (error) {
-        res.status(500).json({ error: error.message }); 
-    }
+  try {
+    // Get current week's schedule from ESPN
+    const schedule = await axios.get('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+    
+    // Extract matchup info
+    const games = schedule.data.events || [];
+    const matchups = games.map(game => {
+      const homeTeam = game.competitions[0].competitors.find(t => t.homeAway === 'home');
+      const awayTeam = game.competitions[0].competitors.find(t => t.homeAway === 'away');
+      
+      return {
+        homeTeam: homeTeam.team.abbreviation,
+        awayTeam: awayTeam.team.abbreviation,
+        status: game.status.type.description
+      };
+    });
+    
+    res.json({
+      week: schedule.data.week.number,
+      matchups: matchups,
+      totalGames: matchups.length
+    });
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
