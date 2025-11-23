@@ -80,7 +80,7 @@ async function calculateDefensiveRankings(weeks){
                 const points = stats.pts_ppr || 0; 
 
                 //irrelevant data
-                if(!position || !playerTeam || points === 0) return; 
+                if(!position || !playerTeam || points < 2) return; //ignore backups
                 if(['K', 'DEF'].includes(position)) return; //skipping kicker/def
 
                 //find opp from schedule 
@@ -97,6 +97,12 @@ async function calculateDefensiveRankings(weeks){
 
                 //record pts this pos scores against this def
                 defenseStats[opponent][position].push(points); 
+
+                // Debug: Log Cincinnati QB data
+        if (opponent === 'CIN' && position === 'QB') {
+            console.log(`Week ${weeks[weekIndex]}: ${player.full_name} (${playerTeam}) scored ${points} vs CIN`);
+        }
+
             });
         });
     //calc avgs and league avgs
@@ -265,29 +271,14 @@ for (let week = 1; week <= lastCompletedWeek; week++) {
     defenseWeeks.push(week);
 }
 
-console.log('DEBUG - Defense weeks:', defenseWeeks);
-
 // Calculate defensive rankings and get this week's schedule
 const { rankings: defenseRankings, leagueAvg } = await calculateDefensiveRankings(defenseWeeks);
 
-//temp debug logs
 console.log('DEBUG - League Avg for QB:', leagueAvg['QB']);
 console.log('DEBUG - HOU vs QB:', defenseRankings['HOU'] ? defenseRankings['HOU']['QB'] : 'not found');
+console.log('DEBUG - CIN vs QB:', defenseRankings['CIN'] ? defenseRankings['CIN']['QB'] : 'not found');  // ADD THIS
 
 const thisWeekSchedule = await getWeekSchedule(currentWeek); // upcoming week schedule
-
-console.log('DEBUG - This week schedule:', Object.keys(thisWeekSchedule).length, 'teams');
-
-// Logging for debugging
-console.log('Today is:', ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]);
-console.log('Current week calculated as:', currentWeek);
-console.log('Last completed week:', lastCompletedWeek);
-console.log('Analyzing weeks:', startWeek, 'to', lastCompletedWeek);
-
-console.log('DEBUG - dayOfWeek:', dayOfWeek);
-console.log('DEBUG - currentWeek:', currentWeek);
-console.log('DEBUG - lastCompletedWeek:', lastCompletedWeek);
-console.log('DEBUG - Weeks array will be:', startWeek, 'to', lastCompletedWeek);
 
 // Fetch stats for each of the last 3 completed weeks
 const statsPromises = [];
