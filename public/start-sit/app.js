@@ -1,6 +1,5 @@
 //API const var, auto-detects if running locally or in production
-const API_URL = window.location.hostname === 'localhost' ? "http://localhost:3000" //local testing
-    : "https://fantasyforecast.onrender.com"; //production 
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://fantasyforecast.onrender.com';
 
 //Get references to HTML elements
 const compareBtn = document.getElementById('compareBtn'); 

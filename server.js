@@ -35,7 +35,6 @@ async function getWeekSchedule(week, season = 2025) {
             schedule[awayAbbr] = homeAbbr; 
         });
 
-        console.log(`Fetched schedule for week ${week}:`, Object.keys(schedule).length / 2, 'games');
         return schedule; 
     } catch (error) {
         console.error(`Error fetching schedule for week ${week}:`, error.message); 
@@ -87,16 +86,15 @@ async function calculateDefensiveRankings(weeks){
                 const opponent = weekSchedule[playerTeam]; 
                 if(!opponent) return; 
 
-                //intialize def stats
-                if(!defenseStats[opponent]) {
-                    defenseStats[opponent] = {}; 
-                }
-                if(!defenseStats[opponent][position]) {
-                    defenseStats[opponent][position] = []; 
+                // initialize defense structure
+                if (!defenseStats[opponent]) defenseStats[opponent] = {};
+                if (!defenseStats[opponent][position]) defenseStats[opponent][position] = {};
+                if (!defenseStats[opponent][position][weeks[weekIndex]]) {
+                    defenseStats[opponent][position][weeks[weekIndex]] = 0;
                 }
 
-                //record pts this pos scores against this def
-                defenseStats[opponent][position].push(points); 
+                // ADD player's points to that week’s total
+                defenseStats[opponent][position][weeks[weekIndex]] += points;
             });
         });
     //calc avgs and league avgs
@@ -104,14 +102,16 @@ async function calculateDefensiveRankings(weeks){
     const leagueAvg = {}; 
     
     //1, calc league avg per pos
-    Object.values(defenseStats).forEach(position => {
-        Object.entries(position).forEach(([position, pointsArray]) => {
-            if(!leagueAvg[position]) {
-                leagueAvg[position] = []; 
-            }
-            leagueAvg[position].push(...pointsArray); //"..." spread operator to push indivivdual points
-        });
-    }); 
+    Object.values(defenseStats).forEach(teamPositions => {
+    Object.entries(teamPositions).forEach(([position, weeklyTotals]) => {
+        if (!leagueAvg[position]) {
+            leagueAvg[position] = [];
+        }
+        // weeklyTotals is an object → push each week's total
+        leagueAvg[position].push(...Object.values(weeklyTotals));
+    });
+});
+
     
     //calc league avg
     Object.keys(leagueAvg).forEach(position => {
@@ -122,8 +122,9 @@ async function calculateDefensiveRankings(weeks){
     //2, calc def avg and compare to league 
     Object.entries(defenseStats).forEach(([team, positions]) => {
         rankings[team] = {};
-        Object.entries(positions).forEach(([position, pointsArray]) => {
-            const avg = pointsArray.reduce((sum, pts) => sum + pts, 0) / pointsArray.length;
+        Object.entries(positions).forEach(([position, weeklyTotals]) => {
+            const totals = Object.values(weeklyTotals);
+            const avg = totals.reduce((sum, pts) => sum + pts, 0) / totals.length;
             const defAvg = Math.round(avg * 10) / 10;
             const leagueAvgForPos = leagueAvg[position] || avg;
 
