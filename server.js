@@ -259,11 +259,9 @@ lastCompletedWeek = Math.max(1, lastCompletedWeek);
 const weeksToAnalyze = 3;
 const startWeek = Math.max(1, lastCompletedWeek - weeksToAnalyze + 1);
 
-// Build weeks array for defensive rankings (use last 5 weeks to account for byes)
-const defenseWeeksToAnalyze = 5;
-const defenseStartWeek = Math.max(1, lastCompletedWeek - defenseWeeksToAnalyze + 1);
+// Use ALL completed weeks for defensive rankings (Week 1 through last completed week)
 const defenseWeeks = [];
-for (let week = defenseStartWeek; week <= lastCompletedWeek; week++) {
+for (let week = 1; week <= lastCompletedWeek; week++) {
     defenseWeeks.push(week);
 }
 
@@ -271,6 +269,11 @@ console.log('DEBUG - Defense weeks:', defenseWeeks);
 
 // Calculate defensive rankings and get this week's schedule
 const { rankings: defenseRankings, leagueAvg } = await calculateDefensiveRankings(defenseWeeks);
+
+//temp debug logs
+console.log('DEBUG - League Avg for QB:', leagueAvg['QB']);
+console.log('DEBUG - HOU vs QB:', defenseRankings['HOU'] ? defenseRankings['HOU']['QB'] : 'not found');
+
 const thisWeekSchedule = await getWeekSchedule(currentWeek); // upcoming week schedule
 
 console.log('DEBUG - This week schedule:', Object.keys(thisWeekSchedule).length, 'teams');
