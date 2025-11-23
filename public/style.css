@@ -133,7 +133,7 @@ main {
 
 .reason {
     font-size: 1.1rem; 
-    opacticy: 0.95; 
+    opacity: 0.95; 
     margin: 0; 
 }
 
@@ -242,4 +242,63 @@ main {
 
 .reset-btn:active {
     transform: translateY(0); 
+}
+
+
+/* Mobile View */
+@media (max-width: 650px) {
+    .header {
+        text-align: center;
+        padding-top: 20px;
+        margin-bottom: 20px; 
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 4px; 
+        font-weight: 700; 
+        display: flex; 
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .header p {
+        font-size: 0.9rem;
+        margin-top: 0;
+        opacity: 0.9;
+        font-weight: 400; 
+        max-width: 80%; 
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .compare-section {
+        padding: 10px 10px 20px 10px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .player-inputs {
+        display: flex; 
+        flex-direction: column;
+        gap: 12px; 
+        width: 100%;
+    }
+
+    .player-inputs input {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 50px; 
+        padding: 0 16px;   
+        font-size: 16px;     
+        border-radius: 8px;   
+        border: 1px solid #ccc;
+    }
+
+    .player-inputs input::placeholder {
+        color: #555; 
+        opacity: 1; 
+    }
 }
