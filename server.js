@@ -97,12 +97,6 @@ async function calculateDefensiveRankings(weeks){
 
                 //record pts this pos scores against this def
                 defenseStats[opponent][position].push(points); 
-
-                // Debug: Log Cincinnati QB data
-        if (opponent === 'CIN' && position === 'QB') {
-            console.log(`Week ${weeks[weekIndex]}: ${player.full_name} (${playerTeam}) scored ${points} vs CIN`);
-        }
-
             });
         });
     //calc avgs and league avgs
@@ -273,11 +267,6 @@ for (let week = 1; week <= lastCompletedWeek; week++) {
 
 // Calculate defensive rankings and get this week's schedule
 const { rankings: defenseRankings, leagueAvg } = await calculateDefensiveRankings(defenseWeeks);
-
-console.log('DEBUG - League Avg for QB:', leagueAvg['QB']);
-console.log('DEBUG - HOU vs QB:', defenseRankings['HOU'] ? defenseRankings['HOU']['QB'] : 'not found');
-console.log('DEBUG - CIN vs QB:', defenseRankings['CIN'] ? defenseRankings['CIN']['QB'] : 'not found');  // ADD THIS
-
 const thisWeekSchedule = await getWeekSchedule(currentWeek); // upcoming week schedule
 
 // Fetch stats for each of the last 3 completed weeks
