@@ -10,31 +10,38 @@ const PORT = process.env.PORT || 3000;  //letting render assign dynamic port
 //Helper function to get the week schedule from ESPN
 async function getWeekSchedule(week, season = 2025) {
     try{
-        //espn's api
-        const response = await axios.get(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scorebard?dates=${season}&seasontype=2&week=${week}`);
-
+        const response = await axios.get(
+            `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2`
+        );
+        
         const games = response.data.events || []; 
         const schedule = {}; 
 
         games.forEach(game => {
-            const homeTeam = game.competitions[0].competitors.find(t => t.homeAway == 'home');
-            const awayTeam = game.competitions[0].competitions.find(t => t.homeAway == 'away'); 
+            // Safety checks
+            if (!game.competitions || !game.competitions[0]) return;
+            if (!game.competitions[0].competitors) return;
+            
+            const homeTeam = game.competitions[0].competitors.find(t => t.homeAway === 'home');
+            const awayTeam = game.competitions[0].competitors.find(t => t.homeAway === 'away'); 
+
+            if (!homeTeam || !awayTeam) return;
+            if (!homeTeam.team || !awayTeam.team) return;
 
             const homeAbbr = homeTeam.team.abbreviation;
             const awayAbbr = awayTeam.team.abbreviation; 
 
-            //map - each team played against who
             schedule[homeAbbr] = awayAbbr; 
             schedule[awayAbbr] = homeAbbr; 
         });
 
+        console.log(`Fetched schedule for week ${week}:`, Object.keys(schedule).length / 2, 'games');
         return schedule; 
     } catch (error) {
-        console.error(`Error fetching schedule for week ${week}: `, error.message); 
+        console.error(`Error fetching schedule for week ${week}:`, error.message); 
         return {}; 
     }
 }
-
 
 // Helper function to calculate defense rankings 
 async function calculateDefensiveRankings(weeks){
@@ -46,7 +53,7 @@ async function calculateDefensiveRankings(weeks){
         //fetching schedule for weeks
         const schedulePromises = weeks.map(week => getWeekSchedule(week)); 
 
-        const [statsResponses, schedule] = await Promise.all([
+        const [statsResponses, schedules] = await Promise.all([
             Promise.all(statsPromises), 
             Promise.all(schedulePromises)
         ]); 
@@ -54,8 +61,8 @@ async function calculateDefensiveRankings(weeks){
         const allStats = statsResponses.map(res => res.data); 
 
         //get all player data 
-        const playersResponses = await axios.get(`https://api.sleeper.app/v1/players/nfl`); 
-        const allPlayers = playersResponse.data; 
+        const playerResponse = await axios.get(`https://api.sleeper.app/v1/players/nfl`); 
+        const allPlayers = playerResponse.data;
 
         //tracking points allowed by each def
         const defenseStats = {}; 
@@ -64,7 +71,7 @@ async function calculateDefensiveRankings(weeks){
         allStats.forEach((weekStats, weekIndex) => {
             const weekSchedule = schedules[weekIndex]; 
 
-            Object.entries(weekStast).forEach(([playerId, stats]) => {
+            Object.entries(weekStats).forEach(([playerId, stats]) => {
                 const player = allPlayers[playerId]; 
                 if(!player|| !player.team) return; 
 
@@ -102,8 +109,8 @@ async function calculateDefensiveRankings(weeks){
             if(!leagueAvg[position]) {
                 leagueAvg[position] = []; 
             }
-            leagueAvg[position].push(pointsArray); 
-        }); 
+            leagueAvg[position].push(...pointsArray); //"..." spread operator to push indivivdual points
+        });
     }); 
     
     //calc league avg
@@ -122,7 +129,7 @@ async function calculateDefensiveRankings(weeks){
 
         rankings[team][position] = {
             avg: defAvg,
-            difficulty: defAvg > leagueAvgForPos ? 'Tough' : 'Favorable',
+            difficulty: defAvg < leagueAvgForPos ? 'Tough' : 'Favorable',
             vsLeague: Math.round((defAvg - leagueAvgForPos) * 10) / 10
         };
         });
@@ -248,15 +255,36 @@ if(dayOfWeek >= 2) { // Tue-Sat
 // Make sure we don’t go below week 1
 lastCompletedWeek = Math.max(1, lastCompletedWeek);
 
-// Last 3 weeks to analyze
+// Last 3 weeks to analyze for player performance
 const weeksToAnalyze = 3;
 const startWeek = Math.max(1, lastCompletedWeek - weeksToAnalyze + 1);
+
+// Build weeks array for defensive rankings (use last 5 weeks to account for byes)
+const defenseWeeksToAnalyze = 5;
+const defenseStartWeek = Math.max(1, lastCompletedWeek - defenseWeeksToAnalyze + 1);
+const defenseWeeks = [];
+for (let week = defenseStartWeek; week <= lastCompletedWeek; week++) {
+    defenseWeeks.push(week);
+}
+
+console.log('DEBUG - Defense weeks:', defenseWeeks);
+
+// Calculate defensive rankings and get this week's schedule
+const { rankings: defenseRankings, leagueAvg } = await calculateDefensiveRankings(defenseWeeks);
+const thisWeekSchedule = await getWeekSchedule(currentWeek); // upcoming week schedule
+
+console.log('DEBUG - This week schedule:', Object.keys(thisWeekSchedule).length, 'teams');
 
 // Logging for debugging
 console.log('Today is:', ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayOfWeek]);
 console.log('Current week calculated as:', currentWeek);
 console.log('Last completed week:', lastCompletedWeek);
 console.log('Analyzing weeks:', startWeek, 'to', lastCompletedWeek);
+
+console.log('DEBUG - dayOfWeek:', dayOfWeek);
+console.log('DEBUG - currentWeek:', currentWeek);
+console.log('DEBUG - lastCompletedWeek:', lastCompletedWeek);
+console.log('DEBUG - Weeks array will be:', startWeek, 'to', lastCompletedWeek);
 
 // Fetch stats for each of the last 3 completed weeks
 const statsPromises = [];
@@ -266,37 +294,51 @@ for (let week = startWeek; week <= lastCompletedWeek; week++) {
     );
 }
 
+//calculate scores based on actual fantasy points
+const statsResponses = await Promise.all(statsPromises); 
+const weeklyStats = statsResponses.map(res => res.data); 
 
-
+const scoredPlayers = foundPlayers.map(player => {
+    const playerId = player.player_id; 
     
-    //calculate scores based on actual fantasy points
-    const statsResponses = await Promise.all(statsPromises); 
-    const weeklyStats = statsResponses.map(res => res.data); 
-    
-    const scoredPlayers = foundPlayers.map(player => {
-        const playerId = player.player_id; 
-        
-        //get player's stats from each week
-        const playerWeeklyPoints = weeklyStats.map(week => {
+    //get player's stats from each week
+    const playerWeeklyPoints = weeklyStats.map(week => {
         const stats = week[playerId]; 
         return stats ? (stats.pts_ppr || 0) : 0; 
-        }).filter(pts => pts > 0); //filter weeks not played
+    }).filter(pts => pts > 0); //filter weeks not played
 
-        
-        //calc recent avg
-        const recentAvg = playerWeeklyPoints.length > 0
+    //calc recent avg
+    const recentAvg = playerWeeklyPoints.length > 0
         ? playerWeeklyPoints.reduce((sum, pts) => sum + pts, 0) / playerWeeklyPoints.length
         : 0; 
+    
+    // Get matchup info
+    const playerTeam = player.team;
+    const opponent = thisWeekSchedule[playerTeam];
+    const playerPosition = player.position;
+    
+    let matchupScore = 0;
+    let matchupInfo = 'No matchup data';
+    
+    if (opponent && defenseRankings[opponent] && defenseRankings[opponent][playerPosition]) {
+        const defenseVsPosition = defenseRankings[opponent][playerPosition];
+        const leagueAvgForPos = leagueAvg[playerPosition] || 0;
         
-        //calc score 
-        let score = recentAvg * 5;
-        
-        // Penalty for inactive
-        if(!player.active) {
+        // Matchup score: positive = good matchup, negative = bad matchup
+        matchupScore = defenseVsPosition.vsLeague;
+        matchupInfo = `vs ${opponent} (${defenseVsPosition.difficulty}, ${defenseVsPosition.avg} pts allowed)`;
+    }
+    
+    //calc score with matchup factored in
+    let score = recentAvg * 4;  // Recent performance 
+    score += matchupScore * 10;  // Matchup difficulty 
+    
+    // Penalty for inactive
+    if(!player.active) {
         score = 0; 
-        }
-        
-        return {
+    }
+    
+    return {
         name: player.full_name, 
         position: player.position, 
         team: player.team || 'Free Agent', 
@@ -304,12 +346,14 @@ for (let week = startWeek; week <= lastCompletedWeek; week++) {
         recentAvg: Math.round(recentAvg * 10) / 10, 
         gamesPlayed: playerWeeklyPoints.length, 
         weeklyPoints: playerWeeklyPoints, 
+        matchup: matchupInfo, 
+        matchupScore: Math.round(matchupScore * 10) / 10, 
         dataStatus: playerWeeklyPoints.length < weeksToAnalyze
             ? 'Limited data - stats may be updating'
             : 'Complete data'
-        };
-    });
-    
+    };
+});
+
     //Step 5 - Determine recommendation
     const sortedPlayers = scoredPlayers.sort((a, b) => b.score - a.score);
     const recommended = sortedPlayers[0];
@@ -328,26 +372,17 @@ for (let week = startWeek; week <= lastCompletedWeek; week++) {
 
 app.get('/api/test-defense', async (req, res) => {
   try {
-    // Get current week's schedule from ESPN
-    const schedule = await axios.get('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
-    
-    // Extract matchup info
-    const games = schedule.data.events || [];
-    const matchups = games.map(game => {
-      const homeTeam = game.competitions[0].competitors.find(t => t.homeAway === 'home');
-      const awayTeam = game.competitions[0].competitors.find(t => t.homeAway === 'away');
-      
-      return {
-        homeTeam: homeTeam.team.abbreviation,
-        awayTeam: awayTeam.team.abbreviation,
-        status: game.status.type.description
-      };
-    });
+    const weeks = [9, 10, 11];
+    const { rankings, leagueAvg } = await calculateDefensiveRankings(weeks);
     
     res.json({
-      week: schedule.data.week.number,
-      matchups: matchups,
-      totalGames: matchups.length
+      message: 'Defensive rankings calculated',
+      leagueAverages: leagueAvg,
+      sampleTeams: {
+        KC: rankings['KC'],
+        BUF: rankings['BUF']
+      },
+      totalTeams: Object.keys(rankings).length
     });
     
   } catch (error) {
