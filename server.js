@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;  //letting render assign dynamic port
 async function getWeekSchedule(week, season = 2025) {
     try{
         const response = await axios.get(
-            `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2`
+            `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2&year=${season}`
         );
         
         const games = response.data.events || []; 
@@ -31,8 +31,9 @@ async function getWeekSchedule(week, season = 2025) {
             const homeAbbr = homeTeam.team.abbreviation;
             const awayAbbr = awayTeam.team.abbreviation; 
 
-            schedule[homeAbbr] = awayAbbr; 
-            schedule[awayAbbr] = homeAbbr; 
+            if (!schedule[homeAbbr]) schedule[homeAbbr] = awayAbbr;
+            if (!schedule[awayAbbr]) schedule[awayAbbr] = homeAbbr;
+
         });
 
         return schedule; 
@@ -299,8 +300,8 @@ const scoredPlayers = foundPlayers.map(player => {
     }
     
     //calc score with matchup factored in
-    let score = recentAvg * 4;  // Recent performance 
-    score += matchupScore * 10;  // Matchup difficulty 
+    score = (recentAvg * 6) + (matchupScore * 4);
+
     
     // Penalty for inactive
     if(!player.active) {
