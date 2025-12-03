@@ -1,5 +1,5 @@
-//API const var to call on backend url deployment
-const API_URL = "https://fantasyforecast.onrender.com";
+//API const var, auto-detects if running locally or in production
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://fantasyforecast.onrender.com';
 
 //Get references to HTML elements
 const compareBtn = document.getElementById('compareBtn'); 
@@ -70,6 +70,7 @@ function displayResults(data) {
                     <p><strong>Team:</strong> ${player.team}</p>
                     <p><strong>Score:</strong> ${player.score}</p>
                     <p><strong>Recent Avg:</strong> ${player.recentAvg}</p>
+                    <p><strong>This Week:</strong> ${player.matchup}</p>
                     <p><strong>Games Played:</strong> ${player.gamesPlayed}/3</p>
                     <p class="data-status">${player.dataStatus}</p>
                 </div>
