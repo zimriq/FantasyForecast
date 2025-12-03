@@ -341,19 +341,29 @@ const scoredPlayers = foundPlayers.map(player => {
 
 app.get('/api/test-defense', async (req, res) => {
   try {
-    const weeks = [9, 10, 11];
+    const weekResponse = await axios.get('https://api.sleeper.app/v1/state/nfl');
+    const currentWeek = weekResponse.data.week;
+    const lastCompletedWeek = Math.max(1, currentWeek - 1);
+    
+    const weeks = [];
+    for (let week = 1; week <= lastCompletedWeek; week++) {
+      weeks.push(week);
+    }
+    
     const { rankings, leagueAvg } = await calculateDefensiveRankings(weeks);
     
     res.json({
       message: 'Defensive rankings calculated',
+      currentWeek: currentWeek,
+      weeksAnalyzed: weeks.length,
       leagueAverages: leagueAvg,
       sampleTeams: {
         KC: rankings['KC'],
-        BUF: rankings['BUF']
+        BUF: rankings['BUF'],
+        CIN: rankings['CIN']
       },
       totalTeams: Object.keys(rankings).length
     });
-    
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
