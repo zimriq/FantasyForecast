@@ -7,15 +7,14 @@
 
 body {
     font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-    background: linear-gradient(150deg, #8c99d3 0%, #764ba2 100%); 
+    background: white;
     min-height: 100vh; 
     padding: 50px;
 }
 
-/* Header */ 
 header {
     text-align: center; 
-    color: white; 
+    color: black; 
     margin-bottom: 50px; 
 }
 
@@ -29,13 +28,11 @@ header p {
     opacity: 0.9; 
 }
 
-/* Main container */ 
 main { 
     max-width: 800px;
     margin: 0 auto; 
 }
 
-/* Compare Section */
 .compare-section {
     background: white; /* or: rgb(126, 115, 208); */
     padding: 30px;
@@ -72,20 +69,18 @@ main {
     transition: border-color 0.3s; 
 }
 
-/* Clicking into text box */ 
 .player-inputs input:focus {
     outline: none; 
     border-color: black;
 }
 
-/* Button */ 
 #compareBtn {
     width: 100%; 
     padding: 15px; 
     font-size: 1rem; 
     font-weight: bold; 
     color: white; 
-    background: linear-gradient(150deg, #4b5dad 0%, #8864ae 100%);
+    background: rgb(20, 20, 176);
     border: none; 
     border-radius: 8px; 
     cursor: pointer; 
@@ -97,13 +92,11 @@ main {
     box-shadow: 0 15px 25px rgba(102, 126, 234, 0.4);
 }
 
-/* Clicking into box */
 #compareBtn:active {
     transform: translateY(0); 
 }
 
 
-/* Results Section */ 
 .results-section {
     background: white; 
     padding: 30px; 
@@ -116,7 +109,6 @@ main {
     display: block; 
 }
 
-/* Results Styling */ 
 .recommended {
     background: radial-gradient(circle, #ff9a9e, #fad0c4);
     color: white; 
@@ -137,7 +129,6 @@ main {
     margin: 0; 
 }
 
-/* Player Cards */ 
 .comparison-cards {
     display: grid; 
     grid-template-columns: auto; /* might change */
@@ -226,11 +217,11 @@ main {
     cursor: pointer;
     transition: all 0.2s; 
     margin-top: 15px; 
-    display: none;  /* Hidden by default */ 
+    display: none;  
 }
 
 .reset-btn.show {
-    display: block; /* show when results appear */ 
+    display: block; 
 }
 
 .reset-btn:hover {

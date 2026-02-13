@@ -1,13 +1,10 @@
-//import libraries
 const express = require('express'); 
 const axios = require('axios'); 
 const cors = require('cors'); 
 
-//create server
 const app = express(); 
 const PORT = process.env.PORT || 3000;  //letting render assign dynamic port 
 
-//Helper function to get the week schedule from ESPN
 async function getWeekSchedule(week, season = 2025) {
     try{
         const response = await axios.get(
@@ -43,7 +40,23 @@ async function getWeekSchedule(week, season = 2025) {
     }
 }
 
-// Helper function to calculate defense rankings 
+async function byeWeek(weeks){
+    try{
+        const response = await axios.get(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`);
+        const byeWeekData = response.data;
+        const byeWeek = 0; 
+        if(byeWeekData.teamsOnBye == weeks){
+            byeWeek = weeks; 
+        }
+        else {
+            byeWeek = 0; 
+        }
+    }
+    catch(error){
+        console.error('Error fetching bye week', error.message); 
+    }
+}
+
 async function calculateDefensiveRankings(weeks){
     try{
         const statsPromises = weeks.map(week =>
@@ -113,8 +126,6 @@ async function calculateDefensiveRankings(weeks){
     });
 });
 
-    
-    //calc league avg
     Object.keys(leagueAvg).forEach(position => {
         const avg = leagueAvg[position].reduce((sum, pts) => sum + pts, 0) / leagueAvg[position].length;
         leagueAvg[position] = Math.round(avg * 10) / 10;
@@ -144,21 +155,18 @@ async function calculateDefensiveRankings(weeks){
     }
 }
 
-//Middleware
 app.use(cors({
     origin: [
-        "https://fantasyforecast.vercel.app", //frontend deployment
-        "http://localhost:3000"  //local testing
+        "https://fantasyforecast.vercel.app", 
+        "http://localhost:3000"  
     ], 
     credentials: true
 })); 
 
 app.use(express.json()); 
 
-//serve static files from 'public' folder 
 app.use(express.static('public')); 
 
-//Get current NFL scores 
 app.get('/api/scores', async (req, res) => {
     try{
         const response = await axios.get(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`);
