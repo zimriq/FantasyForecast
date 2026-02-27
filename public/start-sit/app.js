@@ -37,7 +37,7 @@ compareBtn.addEventListener('click', async() => {
 function displayResults(data) {
     let html = `
         <div class="recommendation"> 
-            <h3> 🏆 Recommendation: START ${data.recommendation}</h3>
+            <h3> Recommendation: START ${data.recommendation}</h3>
             <p class="reason">${data.reason}</p>
               <br><br>
         </div>
