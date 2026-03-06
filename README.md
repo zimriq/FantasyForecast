@@ -9,6 +9,8 @@ A comprehensive full-stack fantasy football toolkit that provides data-driven in
 ### **Player Analysis Tools**
 - **Player Comparison** — Compare 2 NFL players side-by-side with detailed stats  
 - **Start/Sit Recommendations** — Get data-driven recommendations based on recent performance  
+- **Matchup Analysis** — Factor in opponent defensive rankings
+
 
 ### **Live Data & Information**
 - **Real Performance Data** — Uses actual fantasy points from recent games (last 3 weeks)  
@@ -56,7 +58,6 @@ The Start/Sit recommendation is calculated based on:
 ### 🔮 Future Enhancements
 
 **Planned features for future releases:**
-- Matchup Analysis — Factor in opponent defensive rankings
 - Top Performers — Display weekly top performers by position
 - Injury Tracker — Real-time injury updates and impact analysis
 - Trade Analyzer — Evaluate trade proposals and fairness
