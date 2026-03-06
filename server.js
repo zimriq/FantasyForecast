@@ -1,6 +1,8 @@
 const express = require('express'); 
 const axios = require('axios'); 
 const cors = require('cors'); 
+const NodeCache = require('node-cache'); 
+const playerCache = new NodeCache({ stdTTL: 3600 });
 
 const app = express(); 
 const PORT = process.env.PORT || 3000;  //letting render assign dynamic port 
@@ -11,8 +13,12 @@ app.use(express.static('public'));
 
 //helper functs
 async function getSleeperPlayers() {
+    const cached = playerCache.get('nfl_players');
+    if(cached) return cached; 
+
     const response = await axios.get('https://api.sleeper.app/v1/players/nfl');
     const players = Object.values(response.data);
+    playerCache.set('nfl_players', players); 
     return players;
 }
 
@@ -39,9 +45,10 @@ app.get('/api/compare', async (req, res) => {
     }
 });
 
-//api/test-defense
-app.get('/api/test-defense', async (req, res) => {
+//api/matchup
+app.get('/api/matchup', async (req, res) => {
     try{
+
 
     }catch(error) {
         console.error('')
