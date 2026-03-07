@@ -1,11 +1,16 @@
+require('dotenv').config();
+require('express-rate-limit');
 const express = require('express'); 
 const axios = require('axios'); 
 const cors = require('cors'); 
-const NodeCache = require('node-cache'); 
-const playerCache = new NodeCache({ stdTTL: 3600 });
 
 const app = express(); 
-const PORT = process.env.PORT || 3000;  //letting render assign dynamic port 
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 100,
+    max: 100, 
+    message: { error: 'Too many requests, please slow down.' }
+})
 
 app.use(cors());
 app.use(express.json()); 
@@ -23,7 +28,6 @@ async function getSleeperPlayers() {
 }
 
 //api/compare
-const ALLOWED_POSITIONS = ['QB', 'RB', 'WR', 'TE'];
 app.get('/api/compare', async (req, res) => {
     const {player1, player2} = req.query;
     if(!player1 || !player2) {
