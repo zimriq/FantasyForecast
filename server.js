@@ -16,17 +16,6 @@ app.use(cors());
 app.use(express.json()); 
 app.use(express.static('public')); 
 
-//helper functs
-async function getSleeperPlayers() {
-    const cached = playerCache.get('nfl_players');
-    if(cached) return cached; 
-
-    const response = await axios.get('https://api.sleeper.app/v1/players/nfl');
-    const players = Object.values(response.data);
-    playerCache.set('nfl_players', players); 
-    return players;
-}
-
 //api/compare
 app.get('/api/compare', async (req, res) => {
     const {player1, player2} = req.query;
