@@ -1,16 +1,9 @@
 require('dotenv').config();
-require('express-rate-limit');
 const express = require('express'); 
 const axios = require('axios'); 
 const cors = require('cors'); 
 
 const app = express(); 
-
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 100,
-    max: 100, 
-    message: { error: 'Too many requests, please slow down.' }
-})
 
 app.use(cors());
 app.use(express.json()); 
