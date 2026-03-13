@@ -1,14 +1,3 @@
-require('dotenv').config();
-const express = require('express'); 
-const axios = require('axios'); 
-const cors = require('cors'); 
-
-const app = express(); 
-
-app.use(cors());
-app.use(express.json()); 
-app.use(express.static('public')); 
-
 //api/compare
 app.get('/api/compare', async (req, res) => {
     const {player1, player2} = req.query;
