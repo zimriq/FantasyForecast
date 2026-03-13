@@ -7,7 +7,10 @@ const getPlayerProjections = async (req, res, next) => {
 
         if(!player1 || !player2) {
         return res.status(400).json({error: 'Both player names are required'});
-    }
+        }
+        if(!season || !week){
+            return res.status(400).json({error: 'Season and week are required'})
+        }
 
         const playerList = await sleeperService.getSleeperPlayers();
         const p1 = playerList.find(p => ALLOWED_POSITIONS.includes(p.position) && p.status === "Active" && p.full_name?.toLowerCase() === player1.toLowerCase());
@@ -33,6 +36,9 @@ const getPlayerProjections = async (req, res, next) => {
 const getDefenseMatchups = async (req, res, next) => {
     try{
         const {season, week} = req.query; 
+        if(!season || !week){
+            return res.status(400).json({error: 'Season and week are required'})
+        }
 
         const defMatchup = await sleeperService.getDefMatchup(season, week); 
 
