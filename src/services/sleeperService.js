@@ -1,5 +1,5 @@
 const axios = require('axios'); 
-const { playerCache, projectionsCache, defMatchupCache } = require ('.../utils/cache'); 
+const { playerCache, projectionsCache, defMatchupCache } = require ('../utils/cache'); 
 
 async function getSleeperPlayers() {
     const cached = playerCache.get('nfl_players');
