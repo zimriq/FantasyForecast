@@ -12,22 +12,24 @@ async function getSleeperPlayers() {
 }
 
 async function getProjections(season, week) {
-    const cached = projectionsCache.get('players_proj'); 
+    const cacheKey = `projections_${season}_${week}`;
+    const cached = projectionsCache.get(cacheKey); 
     if(cached) return cached; 
 
-    const response = await axios.get('https://api.sleeper.app/v1/projections/nfl/regular/${season}/${week}'); 
+    const response = await axios.get(`https://api.sleeper.app/v1/projections/nfl/regular/${season}/${week}`); 
     const proj = Object.values(response.data); 
-    projectionsCache.set('players_proj', proj); 
+    projectionsCache.set(cacheKey, proj); 
     return proj; 
 }
 
-async function getDefMatchup() {
-    const cached = defMatchupCache.get('defense_matchup'); 
+async function getDefMatchup(season, week) {
+    const cacheKey = `defMatchup_${season}_${week}`;
+    const cached = defMatchupCache.get(cacheKey); 
     if(cached) return cached; 
 
-    const response = await axios.get('https://api.sleeper.app/v1/regular/${season}/${week}'); 
+    const response = await axios.get(`https://api.sleeper.app/v1/stats/nfl/regular/${season}/${week}`); 
     const defM = Object.values(response.data); 
-    defMatchupCache.set('defense_matchup', defM);
+    defMatchupCache.set(cacheKey, defM);
     return defM;
 }
 
