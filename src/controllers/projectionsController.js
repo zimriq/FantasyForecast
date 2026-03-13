@@ -30,5 +30,18 @@ const getPlayerProjections = async (req, res, next) => {
     }
 };
 
-module.exports = {getPlayerProjections}; 
+const getDefenseMatchups = async (req, res, next) => {
+    try{
+        const {season, week} = req.query; 
 
+        const defMatchup = await sleeperService.getDefMatchup(season, week); 
+
+        res.json({
+            defenseMatchup: defMatchup
+        });
+    } catch (err) {
+        next(err); 
+    }
+}
+
+module.exports = {getPlayerProjections, getDefenseMatchups}; 
