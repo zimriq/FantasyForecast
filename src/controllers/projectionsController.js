@@ -41,9 +41,10 @@ const getDefenseMatchups = async (req, res, next) => {
         }
 
         const defMatchup = await sleeperService.getDefMatchup(season, week); 
+        const defTeams = defMatchup.filter(d => isNaN(d.player_id) && !d.player_id.startsWith('TEAM_')); 
 
         res.json({
-            defenseMatchup: defMatchup
+            defenseMatchup: defTeams
         });
     } catch (err) {
         next(err); 
