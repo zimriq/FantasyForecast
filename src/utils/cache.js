@@ -6,6 +6,6 @@ const projectionsCache = new nodeCache ({
     stdTTL: 3600 }); 
 const defMatchupCache = new nodeCache ({
     stdTTL: 3600 });
-const getESPNMatchups = new nodeCache ({
+const getESPNMatchupsCache = new nodeCache ({
     stdTTL: 3600 });
-module.exports = { playerCache, projectionsCache, defMatchupCache, getESPNMatchups }; 
+module.exports = { playerCache, projectionsCache, defMatchupCache, getESPNMatchupsCache }; 
