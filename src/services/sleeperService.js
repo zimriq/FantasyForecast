@@ -1,5 +1,5 @@
 const axios = require('axios'); 
-const { playerCache, projectionsCache, defMatchupCache } = require ('../utils/cache'); 
+const { playerCache, projectionsCache, defMatchupCache, getESPNMatchupsCache } = require('../utils/cache'); 
 
 async function getSleeperPlayers() {
     const cached = playerCache.get('nfl_players');
@@ -43,4 +43,26 @@ async function getDefMatchup(season, week) {
     return defM;
 }
 
-module.exports = { getSleeperPlayers, getProjections, getDefMatchup};
+async function getESPNMatchups(season, week) {
+    const cacheKey = `getESPNMatchups_${season}_${week}`; 
+    const cached = getESPNMatchupsCache.get(cacheKey); 
+    if(cached) return cached; 
+
+    const url = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2&year=${season}`;
+    const response = await axios.get(url); 
+
+    const events = response.data.events;
+    const matchups = {}; 
+    events.forEach(event => {
+        const competitors = event.competitions[0].competitors;
+        const team1 = competitors[0].team.abbreviation; 
+        const team2 = competitors[1].team.abbreviation; 
+        matchups[team1] = team2; 
+        matchups[team2] = team1; 
+    });
+
+    getESPNMatchupsCache.set(cacheKey, matchups);
+    return matchups;
+}
+
+module.exports = { getSleeperPlayers, getProjections, getDefMatchup, getESPNMatchups };
