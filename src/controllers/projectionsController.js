@@ -1,5 +1,5 @@
 const sleeperService = require('../services/sleeperService');
-const {ALLOWED_POSITIONS} = require('../utils/constant');
+const {ALLOWED_POSITIONS, ALLOWED_FIELD_MAP} = require('../utils/constant');
 
 const getPlayerProjections = async (req, res, next) => {
     try{
