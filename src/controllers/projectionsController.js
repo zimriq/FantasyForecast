@@ -37,11 +37,19 @@ const getPlayerProjections = async (req, res, next) => {
         const p1FanPtsAllow = p1Defense[ALLOWED_FIELD_MAP[p1Pos]];
         const p2FanPtsAllow = p2Defense[ALLOWED_FIELD_MAP[p2Pos]];
 
+        const p1FinalScore = (p1Proj.pts_ppr * 0.6) + (p1FanPtsAllow * 0.4); 
+        const p2FinalScore = (p2Proj.pts_ppr * 0.6) + (p2FanPtsAllow * 0.4); 
+        const recommendation = p1FinalScore > p2FinalScore 
+        ? `START ${player1}, SIT ${player2}`
+        : `START ${player2}, SIT ${player1}`;
+
+
         res.json({
             player1Proj: p1Proj,
             player2Proj: p2Proj,
             p1Defense, 
-            p2Defense
+            p2Defense,
+            recommendation
         });
     } catch (err) {
         next(err);
