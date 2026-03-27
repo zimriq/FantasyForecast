@@ -32,6 +32,11 @@ const getPlayerProjections = async (req, res, next) => {
         const p1Defense = defTeams.find( d => d.player_id === p1Opp); 
         const p2Defense = defTeams.find(d => d.player_id === p2Opp); 
 
+        const p1Pos = p1.position;
+        const p2Pos = p2.position;
+        const p1FanPtsAllow = p1Defense[ALLOWED_FIELD_MAP[p1Pos]];
+        const p2FanPtsAllow = p2Defense[ALLOWED_FIELD_MAP[p2Pos]];
+
         res.json({
             player1Proj: p1Proj,
             player2Proj: p2Proj,
