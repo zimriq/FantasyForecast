@@ -5,8 +5,18 @@ const { limiter } = require('./middleware/rateLimiter');
 const projectionsRouter = require('./routes/projections');
 
 const app = express();
-
-app.use(cors());
+const allowedOrigins = ['http://localhost:3000'];
+app.use(cors({
+    origin: (origin, callback) => {
+        if(!origin) return callback(null, true); 
+        if(allowedOrigins.includes(origin)){
+            callback(null, true); 
+        }else{
+            callback(new Error(`Cors policy: origin '${origin}' is not allowed`)); 
+        }
+    }
+    //placeholder for sending cookies or auth headers in the future
+}));
 app.use(express.json());
 app.use(limiter);
 app.use(express.static('public'));
