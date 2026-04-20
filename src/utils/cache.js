@@ -1,5 +1,4 @@
-
-const nodeCache = require('node-cache'); 
+const NodeCache = require('node-cache'); 
 const MAX_KEYS = 500; 
 const cache = new NodeCache({ stdTTL: 300});
 
