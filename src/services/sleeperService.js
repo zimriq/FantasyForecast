@@ -1,19 +1,19 @@
 const axios = require('../config/axiosInstance');
-const { playerCache, projectionsCache, defMatchupCache, getESPNMatchupsCache } = require('../utils/cache'); 
+const {safeSet, cache } = require('../utils/cache');
 
 async function getSleeperPlayers() {
-    const cached = playerCache.get('nfl_players');
+    const cached = cache.get('nfl_players');
     if(cached) return cached; 
 
     const response = await axios.get('https://api.sleeper.app/v1/players/nfl');
     const players = Object.values(response.data);
-    playerCache.set('nfl_players', players); 
+    safeSet('nfl_players', players); 
     return players;
 }
 
 async function getProjections(season, week) {
     const cacheKey = `projections_${season}_${week}`;
-    const cached = projectionsCache.get(cacheKey);
+    const cached = cache.get(cacheKey);
     if(cached) return cached;
 
     const url = `https://api.sleeper.app/v1/projections/nfl/regular/${season}/${week}`;
@@ -23,13 +23,13 @@ async function getProjections(season, week) {
         player_id: id,
         ...stats
     }));
-    projectionsCache.set(cacheKey, proj);
+    safeSet(cacheKey, proj);
     return proj;
 }
 
 async function getDefMatchup(season, week) {
     const cacheKey = `defMatchup_${season}_${week}`;
-    const cached = defMatchupCache.get(cacheKey);
+    const cached = cache.get(cacheKey);
     if(cached) return cached;
 
     const url = `https://api.sleeper.app/v1/stats/nfl/regular/${season}/${week}`;
@@ -39,13 +39,13 @@ async function getDefMatchup(season, week) {
         player_id: id,
         ...stats
     }));
-    defMatchupCache.set(cacheKey, defM);
+    safeSet(cacheKey, defM);
     return defM;
 }
 
 async function getESPNMatchups(season, week) {
     const cacheKey = `getESPNMatchups_${season}_${week}`; 
-    const cached = getESPNMatchupsCache.get(cacheKey); 
+    const cached = cache.get(cacheKey); 
     if(cached) return cached; 
 
     const url = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${week}&seasontype=2&year=${season}`;
@@ -61,7 +61,7 @@ async function getESPNMatchups(season, week) {
         matchups[team2] = team1; 
     });
 
-    getESPNMatchupsCache.set(cacheKey, matchups);
+    safeSet(cacheKey, matchups);
     return matchups;
 }
 
