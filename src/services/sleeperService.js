@@ -1,4 +1,4 @@
-const axios = require('axios'); 
+const axios = require('../config/axiosInstance');
 const { playerCache, projectionsCache, defMatchupCache, getESPNMatchupsCache } = require('../utils/cache'); 
 
 async function getSleeperPlayers() {
