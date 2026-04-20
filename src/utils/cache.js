@@ -1,11 +1,14 @@
 
 const nodeCache = require('node-cache'); 
-const playerCache = new nodeCache ({
-    stdTTL: 3600 }); 
-const projectionsCache = new nodeCache ({
-    stdTTL: 3600 }); 
-const defMatchupCache = new nodeCache ({
-    stdTTL: 3600 });
-const getESPNMatchupsCache = new nodeCache ({
-    stdTTL: 3600 });
-module.exports = { playerCache, projectionsCache, defMatchupCache, getESPNMatchupsCache }; 
+const MAX_KEYS = 500; 
+const cache = new NodeCache({ stdTTL: 300});
+
+const safeSet = (key, value) => {
+    if(cache.keys(). length >= MAX_KEYS) {
+        console.warn('Cache limit reached, skipping cache set for key:', key); 
+        return false; 
+    }
+    return cache.set(key, value); 
+};
+
+module.exports = { cache, safeSet }; 
