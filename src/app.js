@@ -3,6 +3,7 @@ const cors = require('cors');
 const { errorHandler } = require('./middleware/errorHandler');
 const { limiter } = require('./middleware/rateLimiter');
 const projectionsRouter = require('./routes/projections');
+const nflStateRouter = require('./routes/nflStateRoutes');
 
 const app = express();
 const allowedOrigins = ['http://localhost:3000'];
@@ -22,6 +23,7 @@ app.use(limiter);
 app.use(express.static('public'));
 
 app.use('/api/projections', projectionsRouter);
+app.use('/api/nflstate', nflStateRouter);
 app.use(errorHandler);
 
 module.exports = app;
