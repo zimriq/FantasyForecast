@@ -12,6 +12,18 @@ const getPlayerProjections = async (req, res, next) => {
             return res.status(400).json({error: 'Season and week are required'})
         }
 
+        const seasonInt = praseInt(season); 
+        const weekInt = parseInt(week); 
+        if(isNaN(seasonInt) || isNaN(weekInt)){
+        return res.status(400).json({ error: 'Season and week must be numbers' });
+        } 
+        if(weekInt < 1 || weekInt > 18) {
+        return res.status(400).json({ error: 'Week must be between 1 and 18'});
+        }
+        if(seasonInt < 2020 || seasonInt > new Date().getFullYear()){
+        return res.status(400).json({ error: 'Season is out of valid range' });
+        }
+
         const playerList = await sleeperService.getSleeperPlayers();
         const p1 = playerList.find(p => ALLOWED_POSITIONS.includes(p.position) && p.status === "Active" && p.full_name?.toLowerCase() === player1.toLowerCase());
         const p2 = playerList.find(p => ALLOWED_POSITIONS.includes(p.position) && p.status === "Active" && p.full_name?.toLowerCase() === player2.toLowerCase()); 
