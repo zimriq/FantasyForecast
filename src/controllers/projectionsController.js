@@ -22,15 +22,18 @@ const getPlayerProjections = async (req, res, next) => {
         const proj = await sleeperService.getProjections(season, week); 
         const p1Proj = proj.find(p => p.player_id === p1.player_id);
         const p2Proj = proj.find(p => p.player_id === p2.player_id); 
+        if(!p1Proj || !p2Proj) { return res.status(404).json({ error: 'Projections not found for one or both players' })};
 
         const matchups = await sleeperService.getESPNMatchups(season, week); 
         const p1Opp = matchups[p1.team]; 
         const p2Opp = matchups[p2.team]; 
+        if(!p1Opp || !p2Opp) { return res.status(404).json({ error: 'Matchup not found for one or both players' })};
 
         const defStats = await sleeperService.getDefMatchup(season, week); 
         const defTeams = defStats.filter(d => isNaN(d.player_id) && !d.player_id.startsWith('TEAM_')); 
         const p1Defense = defTeams.find( d => d.player_id === p1Opp); 
         const p2Defense = defTeams.find(d => d.player_id === p2Opp); 
+        if(!p1Defense || !p2Defense) { return res.status(404).json({ error: 'Defensive stats not found for one or both opponents' })};
 
         const p1Pos = p1.position;
         const p2Pos = p2.position;
