@@ -22,6 +22,9 @@ app.use(express.json());
 app.use(limiter);
 app.use(express.static('public'));
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok'});
+})
 app.use('/api/projections', projectionsRouter);
 app.use('/api/nflstate', nflStateRouter);
 app.use(errorHandler);
