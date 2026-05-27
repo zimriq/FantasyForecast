@@ -7,20 +7,22 @@ const player2Input = document.getElementById('player2');
 const resultsSection = document.getElementById('results'); 
 const resetBtn = document.getElementById('resetBtn'); 
 
+//change
 compareBtn.addEventListener('click', async() => {
     const player1 = player1Input.value.trim(); 
     const player2 = player2Input.value.trim(); 
-
-    let players = `${player1},${player2}`; 
-
     compareBtn.textContent = 'Comparing...'; 
     compareBtn.disabled = true; 
 
     try{
-        const response = await fetch(`${API_URL}/api/compare?players=${encodeURIComponent(players)}`);
-        const data = await response.json(); 
+        const stateResponse = await fetch(`${API_URL}/api/nflstate/week`);
+        const stateData = await stateResponse.json(); 
+        const { season, week } = stateData; 
 
-        if(response.ok) {
+        const response = await fetch(`${API_URL}/api/projections/players?player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}&season=${season}&week=${week}`);
+        const data = await response.json();
+
+        if(response.ok){
             displayResults(data); 
         } else {
             alert(data.error || 'Failed to compare players'); 
@@ -34,6 +36,7 @@ compareBtn.addEventListener('click', async() => {
     }
 });
 
+//keep
 function displayResults(data) {
     let html = `
         <div class="recommendation"> 
