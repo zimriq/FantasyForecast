@@ -12,7 +12,7 @@ const getPlayerProjections = async (req, res, next) => {
             return res.status(400).json({error: 'Season and week are required'})
         }
 
-        const seasonInt = praseInt(season); 
+        const seasonInt = parseInt(season); 
         const weekInt = parseInt(week); 
         if(isNaN(seasonInt) || isNaN(weekInt)){
         return res.status(400).json({ error: 'Season and week must be numbers' });
@@ -41,19 +41,20 @@ const getPlayerProjections = async (req, res, next) => {
         const p2Opp = matchups[p2.team]; 
         if(!p1Opp || !p2Opp) { return res.status(404).json({ error: 'Matchup not found for one or both players' })};
 
-        const defStats = await sleeperService.getDefMatchup(season, week); 
+        const resolvedWeek = weekInt === 0 ? 1: weekInt; 
+        const defStats = await sleeperService.getDefMatchup(seasonInt, resolvedWeek); 
         const defTeams = defStats.filter(d => isNaN(d.player_id) && !d.player_id.startsWith('TEAM_')); 
-        const p1Defense = defTeams.find( d => d.player_id === p1Opp); 
-        const p2Defense = defTeams.find(d => d.player_id === p2Opp); 
-        if(!p1Defense || !p2Defense) { return res.status(404).json({ error: 'Defensive stats not found for one or both opponents' })};
+        const p1Defense = defTeams.find(d => d.player_id === p1Opp);
+        const p2Defense = defTeams.find(d => d.player_id === p2Opp);
 
-        const p1Pos = p1.position;
-        const p2Pos = p2.position;
-        const p1FanPtsAllow = p1Defense[ALLOWED_FIELD_MAP[p1Pos]];
-        const p2FanPtsAllow = p2Defense[ALLOWED_FIELD_MAP[p2Pos]];
+        const hasDefensiveData = !!(p1Defense && p2Defense); 
+        const p1Pos = p1.position; 
+        const p2Pos = p2.position; 
+        const p1FanPtsAllow = p1Defense?.[ALLOWED_FIELD_MAP[p1Pos]] ?? 0;
+        const p2FanPtsAllow = p2Defense?.[ALLOWED_FIELD_MAP[p2Pos]] ?? 0;
 
-        const p1FinalScore = (p1Proj.pts_ppr * 0.6) + (p1FanPtsAllow * 0.4); 
-        const p2FinalScore = (p2Proj.pts_ppr * 0.6) + (p2FanPtsAllow * 0.4); 
+        const p1FinalScore = (p1Proj.pts_ppr ?? 0) * 0.6 + (p1FanPtsAllow * 0.4); 
+        const p2FinalScore = (p2Proj.pts_ppr ?? 0) * 0.6 + (p2FanPtsAllow * 0.4); 
         const recommendation = p1FinalScore > p2FinalScore 
         ? `START ${player1}, SIT ${player2}`
         : `START ${player2}, SIT ${player1}`;
@@ -64,7 +65,8 @@ const getPlayerProjections = async (req, res, next) => {
             player2Proj: p2Proj,
             p1Defense, 
             p2Defense,
-            recommendation
+            recommendation,
+            scoringMethod: hasDefensiveData ? 'projection + defensive matchup' : 'projection only'
         });
     } catch (err) {
         next(err);
