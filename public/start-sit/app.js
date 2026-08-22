@@ -19,6 +19,7 @@ compareBtn.addEventListener('click', async() => {
         const stateData = await stateResponse.json(); 
         const { season, week } = stateData; 
 
+        console.log('season:', season, 'week:', week);
         const response = await fetch(`${API_URL}/api/projections/players?player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}&season=${season}&week=${week}`);
         const data = await response.json();
 
@@ -38,49 +39,47 @@ compareBtn.addEventListener('click', async() => {
 
 //keep
 function displayResults(data) {
-    let html = `
-        <div class="recommendation"> 
-            <h3> Recommendation: START ${data.recommendation}</h3>
-            <p class="reason">${data.reason}</p>
-              <br><br>
-        </div>
-        
-        <div class="comparison-cards">
-        `;
     
-    data.comparison.forEach((player, index) => {
-        const isRecommended = player.name === data.recommendation; 
-        html+= `
-            <div class="player-card ${isRecommended ? 'recommended' : ''}">
-                <div class="player-header"> 
-                    <h4>${player.name}</h4>
-                    ${isRecommended ? '<span class="badge start">START</span>' : '<span class="badge sit">SIT</span>'}
+    const player1Name = player1Input.value.trim(); 
+    const player2Name = player2Input.value.trim(); 
+    const p1Pts = (data.player1Proj.pts_ppr ?? 0).toFixed(2); 
+    const p2Pts = (data.player2Proj.pts_ppr ?? 0).toFixed(2); 
+
+    const p1Recommended = data.recommendation.includes(`START ${player1Name}`);
+    const p2Recommended = !p1Recommended;
+
+    let html = `
+        <div class="recommendation">
+            <h3>Recommendation: ${data.recommendation}</h3>
+            <p class="reason">Scoring method: ${data.scoringMethod}</p>
+            <br>
+        </div>
+        <div class="comparison-cards">
+            <div class="player-card ${p1Recommended ? 'recommended' : ''}">
+                <div class="player-header">
+                    <h4>${player1Name}</h4>
+                    ${p1Recommended ? '<span class="badge start">START</span>' : '<span class="badge sit">SIT</span>'}
                 </div>
-                <div class="player-info"> 
-                    <p><strong>Position:</strong> ${player.position}</p>
-                    <p><strong>Team:</strong> ${player.team}</p>
-                    <p><strong>Score:</strong> ${player.score}</p>
-                    <p><strong>Recent Avg:</strong> ${player.recentAvg}</p>
-                    <p><strong>This Week:</strong> ${player.matchup}</p>
-                    <p><strong>Games Played:</strong> ${player.gamesPlayed}/3</p>
-                    <p class="data-status">${player.dataStatus}</p>
-                </div>
-                <div class="weekly-points">
-                    <p><strong>Last 3 Weeks:</strong></p>
-                    <p>${player.weeklyPoints.join(', ')} pts</p>
+                <div class="player-info">
+                    <p><strong>Projected Points (PPR):</strong> ${p1Pts}</p>
                 </div>
             </div>
-        `;
-    });
-
-    html += `</div>`;
+            <div class="player-card ${p2Recommended ? 'recommended' : ''}">
+                <div class="player-header">
+                    <h4>${player2Name}</h4>
+                    ${p2Recommended ? '<span class="badge start">START</span>' : '<span class="badge sit">SIT</span>'}
+                </div>
+                <div class="player-info">
+                    <p><strong>Projected Points (PPR):</strong> ${p2Pts}</p>
+                </div>
+            </div>
+        </div>
+    `;
 
     resultsSection.innerHTML = html; 
     resultsSection.classList.add('show'); 
-
     resetBtn.classList.add('show'); 
-
-    resultsSection.scrollIntoView({ behavior: 'smooth'});
+    resultsSection.scrollIntoView({behavior: 'smooth'});
 }
 
 resetBtn.addEventListener('click', () => {
