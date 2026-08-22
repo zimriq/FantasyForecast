@@ -91,4 +91,17 @@ const getDefenseMatchups = async (req, res, next) => {
     }
 }
 
-module.exports = {getPlayerProjections, getDefenseMatchups}; 
+const getPlayers = async (req, res, next) => {
+    try{
+        const fullValidPlayersList = await sleeperService.getSleeperPlayers();
+        const players = fullValidPlayersList
+            .filter(p => ALLOWED_POSITIONS.includes(p.position) && p.status === "Active" && p.team != null)
+            .map(p => ({ full_name: p.full_name, position: p.position, team: p.team }));
+        
+        res.json(players); 
+    } catch (err) {
+        next(err); 
+    }
+}
+
+module.exports = {getPlayerProjections, getDefenseMatchups, getPlayers}; 
