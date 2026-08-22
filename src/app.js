@@ -4,6 +4,7 @@ const { errorHandler } = require('./middleware/errorHandler');
 const { limiter } = require('./middleware/rateLimiter');
 const projectionsRouter = require('./routes/projections');
 const nflStateRouter = require('./routes/nflStateRoutes');
+const playersRouter = require('./routes/players');
 
 const app = express();
 const allowedOrigins = ['http://localhost:3000'];
@@ -27,6 +28,7 @@ app.get('/health', (req, res) => {
 })
 app.use('/api/projections', projectionsRouter);
 app.use('/api/nflstate', nflStateRouter);
+app.use('/api/players', playersRouter);
 app.use(errorHandler);
 
 module.exports = app;
