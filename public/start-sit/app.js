@@ -6,6 +6,49 @@ const player1Input = document.getElementById('player1');
 const player2Input = document.getElementById('player2'); 
 const resultsSection = document.getElementById('results'); 
 const resetBtn = document.getElementById('resetBtn'); 
+const suggestions1 = document.getElementById('suggestions1'); 
+const suggestions2 = document.getElementById('suggestions2'); 
+
+let playersList = []; 
+async function loadPlayers() {
+    try{
+        const response = await fetch(`${API_URL}/api/players`);
+        playersList = await response.json(); 
+        console.log(playersList); 
+    } catch(err) {
+        console.error('Failed to load players', err); 
+    }
+}
+loadPlayers();
+
+function showSuggestions(query, suggestionsE1, inputE1) {
+    if(query.length < 2) {
+        suggestionsE1.innerHTML = ''; 
+        return; 
+    }
+
+    const matches = playersList
+        .filter(p => p.full_name.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 5); 
+
+    if(matches.length === 0){
+        suggestionsE1.innerHTML = '';
+        return;
+    }
+
+    suggestionsE1.innerHTML = matches.map(p => `
+        <div class="suggestion-item" data-name="${p.full_name}">
+            ${p.full_name} <span class="suggestion-meta">${p.position} - ${p.team}</span>
+        </div>
+        `).join('');
+
+    suggestionsE1.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+            inputE1.value = item.dataset.name;
+            suggestionsE1.innerHTML = ''; 
+        });
+    });
+}
 
 //change
 compareBtn.addEventListener('click', async() => {
@@ -93,3 +136,10 @@ resetBtn.addEventListener('click', () => {
 
     player1Input.focus(); 
 })
+
+player1Input.addEventListener('input', () => {
+    showSuggestions(player1Input.value.trim(), suggestions1, player1Input); 
+});
+player2Input.addEventListener('input', () => {
+    showSuggestions(player2Input.value.trim(), suggestions2, player2Input); 
+});
