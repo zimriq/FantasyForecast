@@ -19,8 +19,14 @@
 
 
             <div class="player-inputs">
-                <input type="text" id="player1" placeholder="Enter player name (e.g., Patrick Mahomes)">
-                <input type="text" id="player2" placeholder="Enter player name (e.g., Jordan Love)">
+                <div class="input-wrapper">
+                    <input type="text" id="player1" placeholder="Enter player name (e.g., Jordan Love)" autocomplete="off">
+                    <div class="suggestions" id="suggestions1"></div>
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" id="player2" placeholder="Enter player name (e.g., Josh Allen)" autocomplete="off">
+                    <div class="suggestions" id="suggestions2"></div>
+                </div>
             </div>
 
             <button id="compareBtn">Compare Players</button>
