@@ -3,40 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Fantasy Helper</title>
+    <title>FantasyForecast — Start / Sit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>🏈 NFL Fantasy Helper</h1>
-        <p>Make Data-Driven Start/Sit Decisions</p>
-    </header>
+    <svg class="field-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" preserveAspectRatio="none" aria-hidden="true">
+        <!-- Field base -->
+        <rect width="100" height="200" fill="#0d1f0f"/>
+        <!-- End zones -->
+        <rect x="0" y="0" width="100" height="18" fill="#1e5c1e"/>
+        <rect x="0" y="182" width="100" height="18" fill="#1e5c1e"/>
+        <!-- Yard lines: 10, 50, 10 -->
+        <line x1="0" y1="36" x2="100" y2="36" stroke="#ffffff" stroke-width="0.4"/>
+        <line x1="0" y1="100" x2="100" y2="100" stroke="#ffffff" stroke-width="0.55"/>
+        <line x1="0" y1="164" x2="100" y2="164" stroke="#ffffff" stroke-width="0.4"/>
+        <!-- Hash marks -->
+        <line x1="35" y1="36" x2="35" y2="38" stroke="#ffffff" stroke-width="0.3"/>
+        <line x1="65" y1="36" x2="65" y2="38" stroke="#ffffff" stroke-width="0.3"/>
+        <line x1="35" y1="98" x2="35" y2="102" stroke="#ffffff" stroke-width="0.3"/>
+        <line x1="65" y1="98" x2="65" y2="102" stroke="#ffffff" stroke-width="0.3"/>
+        <line x1="35" y1="162" x2="35" y2="164" stroke="#ffffff" stroke-width="0.3"/>
+        <line x1="65" y1="162" x2="65" y2="164" stroke="#ffffff" stroke-width="0.3"/>
+        <!-- Sidelines -->
+        <line x1="2" y1="18" x2="2" y2="182" stroke="#ffffff" stroke-width="0.35"/>
+        <line x1="98" y1="18" x2="98" y2="182" stroke="#ffffff" stroke-width="0.35"/>
+        <!-- Yard numbers left -->
+        <text x="8" y="38" fill="#ffffff" font-size="5" font-family="Oswald, sans-serif" text-anchor="middle">10</text>
+        <text x="8" y="102" fill="#ffffff" font-size="5" font-family="Oswald, sans-serif" text-anchor="middle">50</text>
+        <text x="8" y="166" fill="#ffffff" font-size="5" font-family="Oswald, sans-serif" text-anchor="middle">10</text>
+        <!-- Yard numbers right -->
+        <text x="92" y="38" fill="#ffffff" font-size="5" font-family="Oswald, sans-serif" text-anchor="middle">10</text>
+        <text x="92" y="102" fill="#ffffff" font-size="5" font-family="Oswald, sans-serif" text-anchor="middle">50</text>
+        <text x="92" y="166" fill="#ffffff" font-size="5" font-family="Oswald, sans-serif" text-anchor="middle">10</text>
+        <!-- Top goal posts -->
+        <line x1="42" y1="4" x2="58" y2="4" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="42" y1="4" x2="42" y2="12" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="58" y1="4" x2="58" y2="12" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="50" y1="4" x2="50" y2="9" stroke="#ffffff" stroke-width="0.4"/>
+        <!-- Bottom goal posts -->
+        <line x1="42" y1="196" x2="58" y2="196" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="42" y1="188" x2="42" y2="196" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="58" y1="188" x2="58" y2="196" stroke="#ffffff" stroke-width="0.5"/>
+        <line x1="50" y1="191" x2="50" y2="196" stroke="#ffffff" stroke-width="0.4"/>
+    </svg>
 
-    <main>
-        <section class="compare-section">
-            <h2>Compare Players</h2>
-            <p class="info-text">Analysis based on last 3 weeks of performance</p>
+    <div class="page">
+        <header>
+            <h1>⚡ FantasyForecast</h1>
+            <p>Data-driven start / sit decisions</p>
+        </header>
 
+        <nav class="main-nav" aria-label="Primary">
+            <a href="#" class="nav-item active">Start / Sit</a>
+        </nav>
 
-            <div class="player-inputs">
-                <div class="input-wrapper">
-                    <input type="text" id="player1" placeholder="Enter player name (e.g., Jordan Love)" autocomplete="off">
-                    <div class="suggestions" id="suggestions1"></div>
+        <main>
+            <section class="compare-section">
+                <div class="player-inputs">
+                    <div class="input-column">
+                        <label class="input-label" for="player1">Player 1</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="player1" placeholder="Enter player name (e.g., Jordan Love)" autocomplete="off">
+                            <div class="suggestions" id="suggestions1"></div>
+                        </div>
+                    </div>
+
+                    <div class="vs-label" aria-hidden="true">VS</div>
+
+                    <div class="input-column">
+                        <label class="input-label" for="player2">Player 2</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="player2" placeholder="Enter player name (e.g., Josh Allen)" autocomplete="off">
+                            <div class="suggestions" id="suggestions2"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="input-wrapper">
-                    <input type="text" id="player2" placeholder="Enter player name (e.g., Josh Allen)" autocomplete="off">
-                    <div class="suggestions" id="suggestions2"></div>
+
+                <div class="button-row">
+                    <button type="button" id="compareBtn">Compare Players</button>
+                    <button type="button" id="resetBtn" class="reset-btn">Reset</button>
                 </div>
-            </div>
+            </section>
 
-            <button id="compareBtn">Compare Players</button>
-            <button id="resetBtn" class="reset-btn">Reset</button>
-        </section>
+            <section class="results-section" id="results">
+            </section>
+        </main>
+    </div>
 
-        <section class="results-section" id="results">
-        </section>
-    </main>
-    
     <script src="app.js"></script>
 </body>
 </html>
