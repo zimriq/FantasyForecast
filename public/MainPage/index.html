@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FantasyForecast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mainpage.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo-mark">
+    <svg viewBox="0 0 100 100" fill="none">
+      <ellipse cx="50" cy="50" rx="46" ry="30" fill="#8c3232" stroke="#f2e8d5" stroke-width="3"/>
+      <line x1="20" y1="50" x2="80" y2="50" stroke="#f2e8d5" stroke-width="3"/>
+      <line x1="38" y1="42" x2="38" y2="58" stroke="#f2e8d5" stroke-width="3"/>
+      <line x1="50" y1="40" x2="50" y2="60" stroke="#f2e8d5" stroke-width="3"/>
+      <line x1="62" y1="42" x2="62" y2="58" stroke="#f2e8d5" stroke-width="3"/>
+    </svg>
+    <span>FANTASYFORECAST</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/start-sit/">Start/Sit</a></li>
+    <li><a href="/scores/">Scores</a></li>
+    <li><a href="/rankings/">Rankings</a></li>
+    <li><a href="/trade-analyzer/">Trade Analyzer</a></li>
+    <li><a href="/player-search/">Player Search</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <svg class="field-scene" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="500" fill="#150f0c"/>
+    <!-- floodlight glows -->
+    <circle cx="80" cy="40" r="220" fill="#f2a63a" opacity="0.10"/>
+    <circle cx="1120" cy="40" r="220" fill="#f2a63a" opacity="0.10"/>
+    <!-- field -->
+    <rect x="0" y="360" width="1200" height="140" fill="#23402a"/>
+    <rect x="0" y="360" width="1200" height="140" fill="#2c4f34" opacity="0.6"/>
+    <!-- yard stripes -->
+    <g stroke="#3c6e47" stroke-width="4">
+      <line x1="60" y1="360" x2="60" y2="500"/>
+      <line x1="160" y1="360" x2="160" y2="500"/>
+      <line x1="260" y1="360" x2="260" y2="500"/>
+      <line x1="360" y1="360" x2="360" y2="500"/>
+      <line x1="460" y1="360" x2="460" y2="500"/>
+      <line x1="560" y1="360" x2="560" y2="500"/>
+      <line x1="660" y1="360" x2="660" y2="500"/>
+      <line x1="760" y1="360" x2="760" y2="500"/>
+      <line x1="860" y1="360" x2="860" y2="500"/>
+      <line x1="960" y1="360" x2="960" y2="500"/>
+      <line x1="1060" y1="360" x2="1060" y2="500"/>
+      <line x1="1160" y1="360" x2="1160" y2="500"/>
+    </g>
+    <!-- floodlight poles -->
+    <g fill="#241a13">
+      <rect x="70" y="60" width="10" height="300"/>
+      <rect x="1110" y="60" width="10" height="300"/>
+    </g>
+    <g fill="#f2a63a" opacity="0.85">
+      <rect x="35" y="30" width="80" height="26" rx="4"/>
+      <rect x="1075" y="30" width="80" height="26" rx="4"/>
+    </g>
+  </svg>
+
+  <div class="hero-content">
+    <div class="week-badge"><span class="dot"></span> <span id="current-week">WEEK 1</span> · 2026 SEASON</div>
+    <h1 class="display">Your Whole Season.<br><span class="accent">One Gameplan.</span></h1>
+    <p class="tagline">FantasyForecast turns weekly data into clear calls — who to start, who to trade, and who to target — all backed by real matchup analysis.</p>
+  </div>
+</section>
+
+<section class="features">
+  <h2 class="display">Your Playbook</h2>
+  <p class="sub">Five tools, one gameplan.</p>
+
+  <div class="card-grid">
+    <a class="card" href="/start-sit/">
+      <svg class="icon" viewBox="0 0 64 64" fill="none">
+        <ellipse cx="32" cy="32" rx="26" ry="17" fill="#8c3232" stroke="#f2e8d5" stroke-width="2.5"/>
+        <line x1="12" y1="32" x2="52" y2="32" stroke="#f2e8d5" stroke-width="2.5"/>
+        <line x1="24" y1="26" x2="24" y2="38" stroke="#f2e8d5" stroke-width="2.5"/>
+        <line x1="32" y1="24" x2="32" y2="40" stroke="#f2e8d5" stroke-width="2.5"/>
+        <line x1="40" y1="26" x2="40" y2="38" stroke="#f2e8d5" stroke-width="2.5"/>
+      </svg>
+      <h3>Start / Sit</h3>
+      <p>Weekly lineup recommendations built from projections and defensive matchups.</p>
+    </a>
+
+    <a class="card" href="/scores/">
+      <svg class="icon" viewBox="0 0 64 64" fill="none">
+        <rect x="10" y="16" width="44" height="32" rx="4" fill="#241a13" stroke="#f2a63a" stroke-width="2.5"/>
+        <text x="32" y="38" text-anchor="middle" font-family="Bungee, cursive" font-size="14" fill="#f2a63a">24</text>
+      </svg>
+      <h3>Scores</h3>
+      <p>Live and recent scores across the league, updated as games move.</p>
+    </a>
+
+    <a class="card" href="/rankings/">
+      <svg class="icon" viewBox="0 0 64 64" fill="none">
+        <path d="M32 8 L40 24 L58 26 L44 38 L48 56 L32 46 L16 56 L20 38 L6 26 L24 24 Z" fill="#f2a63a" stroke="#f2e8d5" stroke-width="2"/>
+      </svg>
+      <h3>Rankings</h3>
+      <p>Position-by-position rankings refreshed weekly to match the current slate.</p>
+    </a>
+
+    <a class="card" href="/trade-analyzer/">
+      <svg class="icon" viewBox="0 0 64 64" fill="none">
+        <path d="M14 32 C14 22 24 16 32 22 C40 16 50 22 50 32" stroke="#f2e8d5" stroke-width="2.5" fill="none"/>
+        <circle cx="18" cy="34" r="6" fill="#3c6e47" stroke="#f2e8d5" stroke-width="2"/>
+        <circle cx="46" cy="34" r="6" fill="#8c3232" stroke="#f2e8d5" stroke-width="2"/>
+      </svg>
+      <h3>Trade Analyzer</h3>
+      <p>See who wins a trade before you make it, weighted by rest-of-season value.</p>
+    </a>
+
+    <a class="card" href="/player-search/">
+      <svg class="icon" viewBox="0 0 64 64" fill="none">
+        <circle cx="27" cy="27" r="14" fill="none" stroke="#f2e8d5" stroke-width="3"/>
+        <line x1="37" y1="37" x2="52" y2="52" stroke="#f2e8d5" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <h3>Player Search</h3>
+      <p>Look up any player's profile, stats, and outlook in a couple taps.</p>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="yard-divider"></div>
+  Data from Sleeper API &amp; ESPN · FantasyForecast 2026
+</footer>
+
+<script src="mainpage.js"></script>
+</body>
+</html>
