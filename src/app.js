@@ -1,5 +1,6 @@
 const express = require('express'); 
 const cors = require('cors'); 
+const path = require('path');
 const { errorHandler } = require('./middleware/errorHandler');
 const { limiter } = require('./middleware/rateLimiter');
 const projectionsRouter = require('./routes/projections');
@@ -22,6 +23,10 @@ app.use(cors({
 app.use(express.json());
 app.use(limiter);
 app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'MainPage', 'index.html'));
+});
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok'});
