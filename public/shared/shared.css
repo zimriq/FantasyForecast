@@ -1,0 +1,81 @@
+/* shared.css
+   Styles for elements shared across every page — currently just the nav bar.
+   Uses the same color variables as MainPage.css; if that palette ever moves
+   into its own shared variables file, this should pull from there too. */
+
+:root {
+  --bg-base: #150f0c;
+  --turf-dark: #23402a;
+  --amber: #f2a63a;
+  --cream: #f2e8d5;
+  --cream-dim: #cfc3ab;
+  --leather-dark: #5e2020;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Work Sans', sans-serif;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 6%;
+  background: linear-gradient(180deg, rgba(21,15,12,0.95), rgba(21,15,12,0.75));
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 3px solid var(--turf-dark);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.logo-mark svg { width: 34px; height: 34px; }
+
+.logo-mark span {
+  font-family: 'Bungee', cursive;
+  font-size: 1.15rem;
+  color: var(--amber);
+  text-shadow: 0 2px 0 var(--leather-dark);
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: var(--cream-dim);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-links a:hover {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+}
+
+/* Marks whichever link matches the current page, set by nav.js */
+.nav-links a.active {
+  color: var(--amber);
+  border-bottom-color: var(--amber);
+}
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+}

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/shared/shared.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FantasyForecast — Start / Sit</title>
@@ -10,6 +12,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="nav-placeholder"></div>
+
     <svg class="field-bg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" preserveAspectRatio="none" aria-hidden="true">
         <!-- Field base -->
         <rect width="100" height="200" fill="#0d1f0f"/>
@@ -56,10 +60,6 @@
             <p>Data-driven start / sit decisions</p>
         </header>
 
-        <nav class="main-nav" aria-label="Primary">
-            <a href="#" class="nav-item active">Start / Sit</a>
-        </nav>
-
         <main>
             <section class="compare-section">
                 <div class="player-inputs">
@@ -94,5 +94,6 @@
     </div>
 
     <script src="app.js"></script>
+    <script src="/shared/nav.js"></script>
 </body>
 </html>

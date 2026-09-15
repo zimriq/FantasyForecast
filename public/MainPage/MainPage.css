@@ -30,57 +30,6 @@ body {
   letter-spacing: 0.01em;
 }
 
-/* ---------- NAV ---------- */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 6%;
-  background: linear-gradient(180deg, rgba(21,15,12,0.95), rgba(21,15,12,0.75));
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  border-bottom: 3px solid var(--turf-dark);
-}
-
-.logo-mark {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-mark svg { width: 34px; height: 34px; }
-
-.logo-mark span {
-  font-family: 'Bungee', cursive;
-  font-size: 1.15rem;
-  color: var(--amber);
-  text-shadow: 0 2px 0 var(--leather-dark);
-}
-
-.nav-links {
-  display: flex;
-  gap: 28px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-links a {
-  color: var(--cream-dim);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.92rem;
-  padding: 6px 2px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.nav-links a:hover {
-  color: var(--amber);
-  border-bottom-color: var(--amber);
-}
-
 /* ---------- HERO ---------- */
 .hero {
   position: relative;
