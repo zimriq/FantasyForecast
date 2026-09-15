@@ -14,14 +14,13 @@ app.use(cors({
         if(!origin) return callback(null, true); 
         if(allowedOrigins.includes(origin)){
             callback(null, true); 
-        }else{
+        } else {
             callback(new Error(`Cors policy: origin '${origin}' is not allowed`)); 
         }
     }
     //placeholder for sending cookies or auth headers in the future
 }));
 app.use(express.json());
-app.use(limiter);
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
@@ -31,9 +30,9 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok'});
 })
-app.use('/api/projections', projectionsRouter);
-app.use('/api/nflstate', nflStateRouter);
-app.use('/api/players', playersRouter);
+app.use('/api/projections', limiter, projectionsRouter);
+app.use('/api/nflstate', limiter, nflStateRouter);
+app.use('/api/players', limiter, playersRouter);
 app.use(errorHandler);
 
 module.exports = app;

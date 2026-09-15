@@ -6,4 +6,4 @@ const limiter = rateLimit({
     message: { error: 'Too many requests, please slow down.' }
 })
 
-module.exports = { limiter }; 
+module.exports = { limiter };
