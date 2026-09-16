@@ -74,8 +74,16 @@ const getPlayerProjections = async (req, res, next) => {
         res.json({
             player1Proj: p1Proj,
             player2Proj: p2Proj,
-            p1Defense, 
-            p2Defense,
+            p1Matchup: {
+                opponent: p1Opp, 
+                position: p1Pos,
+                fanPtsAllowed: p1FanPtsAllow
+            }, 
+            p2Matchup: {
+                opponent: p2Opp,
+                position: p2Pos, 
+                fanPtsAllowed: p2FanPtsAllow
+            },
             recommendation,
             scoringMethod: hasDefensiveData ? 'projection + defensive matchup' : 'projection only',
             defensiveDataWeek: hasDefensiveData ? defensiveDataWeek : null

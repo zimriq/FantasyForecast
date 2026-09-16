@@ -90,6 +90,14 @@ function displayResults(data) {
 
     const p1Recommended = data.recommendation.includes(`START ${player1Name}`);
     const p2Recommended = !p1Recommended;
+    const hasMatchupData = data.scoringMethod !== 'projection only';
+    const p1MatchupLine = hasMatchupData
+        ? `Facing: ${data.p1Matchup.opponent} — allows ${data.p1Matchup.fanPtsAllowed.toFixed(1)} fantasy pts/gm to ${data.p1Matchup.position}s`
+        : `Facing: ${data.p1Matchup.opponent} — matchup data unavailable`;
+    const p2MatchupLine = hasMatchupData
+        ? `Facing: ${data.p2Matchup.opponent} — allows ${data.p2Matchup.fanPtsAllowed.toFixed(1)} fantasy pts/gm to ${data.p2Matchup.position}s`
+        : `Facing: ${data.p2Matchup.opponent} — matchup data unavailable`;
+
 
     let html = `
         <div class="recommendation">
@@ -105,6 +113,7 @@ function displayResults(data) {
                 </div>
                 <div class="player-info">
                     <p><strong>Projected Points (PPR):</strong> ${p1Pts}</p>
+                    <p><strong>${p1MatchupLine}</strong></p>
                 </div>
             </div>
             <div class="player-card ${p2Recommended ? 'recommended' : ''}">
@@ -114,6 +123,7 @@ function displayResults(data) {
                 </div>
                 <div class="player-info">
                     <p><strong>Projected Points (PPR):</strong> ${p2Pts}</p>
+                    <p><strong>${p2MatchupLine}</strong></p>
                 </div>
             </div>
         </div>
