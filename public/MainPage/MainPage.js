@@ -7,16 +7,16 @@ async function loadCurrentWeek() {
   if (!weekEl) return;
 
   try{
-    const res = await fetch('/api/nflstate/week');
+    const res = await fetch('/api/nflstate/week', { cache: 'no-store' });
 
     if(!res.ok){
       throw new Error(`Request failed with status ${res.status}`);
     }
 
     const data = await res.json(); 
-    weekE1.textContent = `WEEK ${data.week}`;
+    weekEl.textContent = `WEEK ${data.week}`;
   } catch(err){
     console.error('Failed to load current NFL week:', err); 
-    weekE1.textContent = 'WEEK -'; 
+    weekEl.textContent = 'WEEK -'; 
   }
 }
